@@ -1,0 +1,2 @@
+root array
+└─ items string [>= 1 chars]

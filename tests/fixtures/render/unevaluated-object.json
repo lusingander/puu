@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "base": {
+      "type": "object",
+      "properties": {
+        "tenantId": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "$ref": "#/$defs/base",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    }
+  },
+  "allOf": [
+    {
+      "properties": {
+        "status": {
+          "enum": [
+            "draft",
+            "confirmed"
+          ]
+        }
+      }
+    }
+  ],
+  "unevaluatedProperties": false
+}

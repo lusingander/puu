@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/root.json",
+  "type": "object",
+  "properties": {
+    "rootValue": {
+      "$ref": "#value"
+    },
+    "childValue": {
+      "$ref": "child.json#value"
+    }
+  },
+  "$defs": {
+    "rootValue": {
+      "$anchor": "value",
+      "type": "string"
+    },
+    "child": {
+      "$id": "child.json",
+      "type": "object",
+      "properties": {
+        "value": {
+          "$anchor": "value",
+          "type": "integer"
+        },
+        "rootValue": {
+          "$ref": "root.json#value"
+        }
+      }
+    }
+  }
+}

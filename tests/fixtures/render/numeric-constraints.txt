@@ -1,0 +1,5 @@
+root object
+├─ age integer [>= 0]
+├─ score number [>= 0] [<= 1]
+├─ ratio number [> 0] [< 1] [multiple of 0.01]
+└─ untyped <type unspecified> [>= 0]

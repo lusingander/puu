@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "legacy": {
+      "$id": "https://example.test/legacy",
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "array",
+      "items": [ { "type": "string" } ],
+      "additionalItems": false
+    },
+    "current": {
+      "type": "array",
+      "prefixItems": [ { "type": "integer" } ],
+      "items": false
+    },
+    "inherited": {
+      "$id": "https://example.test/inherited",
+      "type": "array",
+      "prefixItems": [ { "type": "boolean" } ],
+      "items": false
+    }
+  }
+}

@@ -1,0 +1,8 @@
+root array
+├─ [0] string
+├─ [1] -> Amount
+├─ [2] -> #/items/0
+└─ additional items forbidden
+
+Definitions
+└─ Amount integer [>= 0]

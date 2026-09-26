@@ -1,0 +1,4 @@
+root array [>= 2 items]
+├─ [0] string
+├─ [1] integer
+└─ additional items forbidden

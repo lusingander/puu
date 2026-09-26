@@ -1,0 +1,31 @@
+{
+  "type": "object",
+  "properties": {
+    "defaultCount": {
+      "type": "array",
+      "contains": {
+        "type": "string"
+      }
+    },
+    "optionalMatch": {
+      "type": "array",
+      "contains": {
+        "type": "string",
+        "pattern": "^x-"
+      },
+      "minContains": 0
+    },
+    "capped": {
+      "type": "array",
+      "contains": {
+        "type": "integer"
+      },
+      "maxContains": 3
+    },
+    "withoutContains": {
+      "type": "array",
+      "minContains": 0,
+      "maxContains": 2
+    }
+  }
+}

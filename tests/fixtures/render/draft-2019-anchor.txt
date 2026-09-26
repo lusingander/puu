@@ -1,0 +1,2 @@
+root object [anchor: root:name]
+└─ self -> root [recursive]

@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$ref": "#/definitions/Base",
+  "maxProperties": 1,
+  "type": "object",
+  "properties": {
+    "extra": { "type": "string" }
+  },
+  "definitions": {
+    "Base": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "integer" }
+      }
+    }
+  }
+}

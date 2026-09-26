@@ -1,0 +1,19 @@
+root object
+├─ allOf
+│  ├─ [0] -> BaseRecord
+│  └─ [1] object [closed]
+│     └─ active boolean
+├─ anyOf
+│  ├─ [0] <type unspecified> [required names: "email"]
+│  └─ [1] <type unspecified> [required names: "phone"]
+├─ oneOf
+│  ├─ [0] <type unspecified>
+│  │  └─ kind -> #/oneOf/0/$defs/PersonalKind
+│  └─ [1] <type unspecified>
+│     └─ kind = "business"
+└─ not <type unspecified> [required names: "deletedAt"]
+
+Definitions
+├─ BaseRecord object
+│  └─ id string [required]
+└─ #/oneOf/0/$defs/PersonalKind = "personal"

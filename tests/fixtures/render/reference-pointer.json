@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "properties": {
+    "first": { "$ref": "#/$defs/a~1b" },
+    "alias": { "$ref": "#/properties/first" },
+    "tilde": { "$ref": "#/$defs/tilde~0key" },
+    "emptyName": { "$ref": "#/$defs/" },
+    "encoded": { "$ref": "#/%24defs/a~1b" },
+    "emptyRef": { "$ref": "" },
+    "notSchema": { "$ref": "#/properties" },
+    "anchor": { "$ref": "#Value" },
+    "badEscape": { "$ref": "#/$defs/a~2b" }
+  },
+  "$defs": {
+    "a/b": { "type": "string" },
+    "tilde~key": { "type": "integer" },
+    "": { "type": "boolean" }
+  }
+}

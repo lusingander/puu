@@ -1,0 +1,7 @@
+root object
+├─ home -> Address
+└─ office -> Address
+
+Definitions
+└─ Address object
+   └─ city string [required]

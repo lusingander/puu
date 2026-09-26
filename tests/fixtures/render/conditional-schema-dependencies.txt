@@ -1,0 +1,16 @@
+root object
+├─ kind string
+├─ billingAddress object
+├─ when property "billingAddress" exists <type unspecified>
+│  └─ billingCountry string [required]
+├─ when property "recursive" exists -> root [recursive]
+├─ if <type unspecified>
+│  └─ kind = "digital" [required]
+├─ then <type unspecified>
+│  └─ downloadUrl string [required] [format: uri]
+└─ else <type unspecified>
+   └─ shippingAddress -> Address [required]
+
+Definitions
+└─ Address object
+   └─ postalCode string [required]

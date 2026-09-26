@@ -1,0 +1,43 @@
+{
+  "type": "object",
+  "properties": {
+    "home": { "$ref": "#/$defs/Address" },
+    "office": { "$ref": "#/$defs/Address" },
+    "manager": { "$ref": "#/$defs/Person" },
+    "limitedAddress": {
+      "$ref": "#/$defs/Address",
+      "maxProperties": 2
+    },
+    "paidStatus": {
+      "$ref": "#/$defs/Status",
+      "const": "paid"
+    },
+    "missing": { "$ref": "#/$defs/Unknown" },
+    "remote": {
+      "$ref": "https://example.test/common.json#/$defs/Address"
+    }
+  },
+  "required": ["home", "manager"],
+  "$defs": {
+    "Address": {
+      "type": "object",
+      "properties": {
+        "city": { "type": "string" }
+      },
+      "required": ["city"],
+      "additionalProperties": false
+    },
+    "Person": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "manager": { "$ref": "#/$defs/Person" }
+      },
+      "required": ["name"]
+    },
+    "Status": {
+      "type": "string",
+      "enum": ["pending", "paid"]
+    }
+  }
+}

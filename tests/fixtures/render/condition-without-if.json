@@ -1,0 +1,11 @@
+{
+  "type": "object",
+  "then": {
+    "properties": {
+      "enabled": {
+        "const": true
+      }
+    }
+  },
+  "else": false
+}

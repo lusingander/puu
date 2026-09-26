@@ -1,0 +1,10 @@
+root -> base [type: object]
+├─ id string
+├─ unevaluated properties forbidden [evaluation-dependent] [evaluated by: properties, $ref, allOf]
+└─ allOf
+   └─ [0] <type unspecified>
+      └─ status enum {"draft", "confirmed"}
+
+Definitions
+└─ base object
+   └─ tenantId string

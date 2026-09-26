@@ -1,0 +1,3 @@
+root array
+└─ [0] object
+   └─ id string

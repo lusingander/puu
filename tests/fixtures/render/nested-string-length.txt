@@ -1,0 +1,2 @@
+root object
+└─ name string [>= 1 chars]

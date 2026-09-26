@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "Address": {
+      "type": "object",
+      "properties": {
+        "postalCode": {
+          "type": "string"
+        }
+      },
+      "required": ["postalCode"]
+    }
+  },
+  "type": "object",
+  "properties": {
+    "kind": {
+      "type": "string"
+    },
+    "billingAddress": {
+      "type": "object"
+    }
+  },
+  "dependentSchemas": {
+    "billingAddress": {
+      "properties": {
+        "billingCountry": {
+          "type": "string"
+        }
+      },
+      "required": ["billingCountry"]
+    },
+    "recursive": {
+      "$ref": "#"
+    }
+  },
+  "if": {
+    "properties": {
+      "kind": {
+        "const": "digital"
+      }
+    },
+    "required": ["kind"]
+  },
+  "then": {
+    "properties": {
+      "downloadUrl": {
+        "type": "string",
+        "format": "uri"
+      }
+    },
+    "required": ["downloadUrl"]
+  },
+  "else": {
+    "properties": {
+      "shippingAddress": {
+        "$ref": "#/$defs/Address"
+      }
+    },
+    "required": ["shippingAddress"]
+  }
+}

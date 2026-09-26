@@ -1,0 +1,5 @@
+root -> Base [ignored next to $ref: maxProperties, type, properties]
+
+Definitions
+└─ Base object
+   └─ id integer

@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Order",
+  "description": "A customer order.",
+  "type": "object",
+  "properties": {
+    "orderId": {
+      "type": "string",
+      "format": "uuid",
+      "readOnly": true
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pending", "paid", "shipped"]
+    },
+    "customer": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "loyaltyTier": {
+          "type": ["string", "null"],
+          "enum": ["bronze", "silver", null]
+        }
+      },
+      "required": ["name", "email"],
+      "additionalProperties": false
+    },
+    "lineItems": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "sku": {
+            "type": "string",
+            "pattern": "^[A-Z0-9-]+$"
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "unitPrice": {
+            "type": "number",
+            "minimum": 0,
+            "multipleOf": 0.01
+          }
+        },
+        "required": ["sku", "quantity", "unitPrice"],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "labels": {
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "deliveryWindow": {
+      "type": "array",
+      "minItems": 2,
+      "prefixItems": [
+        { "type": "string", "format": "date-time" },
+        { "type": "string", "format": "date-time" }
+      ],
+      "items": false
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "giftNote": {
+      "type": ["string", "null"],
+      "maxLength": 200
+    }
+  },
+  "required": ["orderId", "status", "customer", "lineItems"],
+  "additionalProperties": false
+}

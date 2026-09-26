@@ -1,0 +1,4 @@
+root array
+├─ [0] string
+├─ [1] integer
+└─ [2..] number [>= 0]

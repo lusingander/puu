@@ -1,0 +1,4 @@
+root object
+├─ then <type unspecified> [ignored without if]
+│  └─ enabled = true
+└─ else never [ignored without if]

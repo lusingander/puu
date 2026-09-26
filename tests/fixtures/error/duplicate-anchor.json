@@ -1,0 +1,12 @@
+{
+  "$defs": {
+    "first": {
+      "$anchor": "duplicate",
+      "type": "string"
+    },
+    "second": {
+      "$anchor": "duplicate",
+      "type": "integer"
+    }
+  }
+}

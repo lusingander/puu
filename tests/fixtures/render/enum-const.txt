@@ -1,0 +1,7 @@
+root object
+├─ role string [enum: "admin" | "user"]
+├─ mixed enum {"red", null, 42}
+├─ kind = "cat"
+├─ version integer [const: 2]
+├─ both string [const: "a"] [enum: "a" | "b"]
+└─ many <type unspecified> [enum: 5 values]

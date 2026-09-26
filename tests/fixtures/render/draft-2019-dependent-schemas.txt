@@ -1,0 +1,2 @@
+root object
+└─ when property "creditCard" exists <type unspecified> [required names: "billingAddress"]

@@ -1,0 +1,20 @@
+{
+  "type": "object",
+  "properties": {
+    "user": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "active": true
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "tags": {
+      "type": "array"
+    }
+  }
+}

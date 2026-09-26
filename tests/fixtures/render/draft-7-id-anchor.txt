@@ -1,0 +1,5 @@
+root object [uninterpreted: $anchor]
+└─ named -> named
+
+Definitions
+└─ named string [anchor: named:value]

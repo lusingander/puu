@@ -1,0 +1,4 @@
+{
+  "$schema": "https://example.test/custom/schema",
+  "type": "string"
+}

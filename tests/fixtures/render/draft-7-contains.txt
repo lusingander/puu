@@ -1,0 +1,2 @@
+root array [uninterpreted: minContains, maxContains]
+└─ contains integer [>= 1 matches]

@@ -1,0 +1,34 @@
+{
+  "type": "object",
+  "properties": {
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "maxItems": 10,
+      "uniqueItems": true
+    },
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "restricted": {
+      "type": "array",
+      "items": false
+    },
+    "untyped": {
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

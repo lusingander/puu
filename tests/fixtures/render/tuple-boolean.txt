@@ -1,0 +1,4 @@
+root array
+├─ [0] any
+├─ [1] never
+└─ [2] boolean

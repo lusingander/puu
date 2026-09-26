@@ -1,0 +1,5 @@
+{
+  "$vocabulary": {
+    "https://example.test/vocab": "required"
+  }
+}

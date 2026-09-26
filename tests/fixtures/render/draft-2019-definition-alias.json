@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "properties": {
+    "old": { "$ref": "#/definitions/Status" },
+    "new": { "$ref": "#/$defs/Status" }
+  },
+  "definitions": {
+    "Status": { "type": "integer" }
+  },
+  "$defs": {
+    "Status": { "type": "string" }
+  }
+}

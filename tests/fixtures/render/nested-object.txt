@@ -1,0 +1,5 @@
+root object
+├─ user object
+│  ├─ id string [required]
+│  └─ active any
+└─ tags array

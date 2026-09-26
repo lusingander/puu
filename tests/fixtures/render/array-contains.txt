@@ -1,0 +1,5 @@
+root number[]
+└─ contains -> HighValue [2..4 matches]
+
+Definitions
+└─ HighValue number [>= 100]

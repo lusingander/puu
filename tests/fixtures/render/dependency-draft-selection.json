@@ -1,0 +1,17 @@
+{
+  "type": "object",
+  "dependencies": {
+    "legacyTrigger": ["legacyTarget"],
+    "legacySchema": {
+      "required": ["legacyField"]
+    }
+  },
+  "dependentRequired": {
+    "modernTrigger": ["modernTarget"]
+  },
+  "dependentSchemas": {
+    "modernSchema": {
+      "required": ["modernField"]
+    }
+  }
+}

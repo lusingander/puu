@@ -1,0 +1,3 @@
+root object [if "token" exists, requires "expiresAt"]
+├─ token string
+└─ expiresAt string [format: date-time]

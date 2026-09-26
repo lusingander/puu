@@ -1,0 +1,43 @@
+{
+  "type": "object",
+  "properties": {
+    "role": {
+      "type": "string",
+      "enum": [
+        "admin",
+        "user"
+      ]
+    },
+    "mixed": {
+      "enum": [
+        "red",
+        null,
+        42
+      ]
+    },
+    "kind": {
+      "const": "cat"
+    },
+    "version": {
+      "type": "integer",
+      "const": 2
+    },
+    "both": {
+      "type": "string",
+      "const": "a",
+      "enum": [
+        "a",
+        "b"
+      ]
+    },
+    "many": {
+      "enum": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e"
+      ]
+    }
+  }
+}

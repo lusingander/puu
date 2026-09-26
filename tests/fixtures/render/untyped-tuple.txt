@@ -1,0 +1,2 @@
+root <type unspecified>
+└─ [0] string

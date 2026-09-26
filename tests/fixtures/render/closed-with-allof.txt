@@ -1,0 +1,4 @@
+root object [closed]
+└─ allOf
+   └─ [0] <type unspecified>
+      └─ x string

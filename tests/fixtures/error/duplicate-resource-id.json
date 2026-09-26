@@ -1,0 +1,12 @@
+{
+  "$defs": {
+    "first": {
+      "$id": "child.json",
+      "type": "string"
+    },
+    "second": {
+      "$id": "child.json",
+      "type": "integer"
+    }
+  }
+}

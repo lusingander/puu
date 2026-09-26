@@ -1,0 +1,9 @@
+root object [resource: https://example.test/tree.json] [dynamic anchor: node]
+├─ children array
+│  └─ items -> root [recursive] [dynamic ref start]
+├─ plain -> plain [dynamic ref: static start]
+└─ combined -> plain [type: string]
+   └─ $dynamicRef -> root [recursive] [dynamic ref start]
+
+Definitions
+└─ plain string [anchor: plain]

@@ -1,0 +1,7 @@
+root object [resource: https://example.test/tree.json] [recursive anchor]
+└─ children array
+   └─ items -> root [recursive] [recursive ref start]
+
+Definitions
+└─ plain object [resource: https://example.test/plain.json]
+   └─ self -> https://example.test/plain.json [recursive] [recursive ref: static start]

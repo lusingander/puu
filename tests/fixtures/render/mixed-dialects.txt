@@ -1,0 +1,10 @@
+root object
+├─ legacy array [resource: https://example.test/legacy]
+│  ├─ [0] string
+│  └─ additional items forbidden
+├─ current array
+│  ├─ [0] integer
+│  └─ additional items forbidden
+└─ inherited array [resource: https://example.test/inherited]
+   ├─ [0] boolean
+   └─ additional items forbidden

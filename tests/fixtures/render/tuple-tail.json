@@ -1,0 +1,15 @@
+{
+  "type": "array",
+  "prefixItems": [
+    {
+      "type": "string"
+    },
+    {
+      "type": "integer"
+    }
+  ],
+  "items": {
+    "type": "number",
+    "minimum": 0
+  }
+}

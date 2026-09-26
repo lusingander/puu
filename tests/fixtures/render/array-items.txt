@@ -1,0 +1,8 @@
+root object
+├─ tags string[] [1..10 items] [unique]
+├─ records array
+│  └─ items object
+│     └─ key string
+├─ restricted array [items: forbidden]
+└─ untyped <type unspecified>
+   └─ items string

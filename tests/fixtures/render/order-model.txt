@@ -1,0 +1,20 @@
+root object [closed] [title: "Order"] [description: "A customer order."]
+├─ orderId string [required] [read only] [format: uuid]
+├─ status string [required] [enum: "pending" | "paid" | "shipped"]
+├─ customer object [required] [closed]
+│  ├─ name string [required] [1..80 chars]
+│  ├─ email string [required] [format: email]
+│  └─ loyaltyTier string | null [enum: "bronze" | "silver" | null]
+├─ lineItems array [required] [>= 1 items]
+│  └─ items object [closed]
+│     ├─ sku string [required] [pattern: "^[A-Z0-9-]+$"]
+│     ├─ quantity integer [required] [>= 1]
+│     └─ unitPrice number [required] [>= 0] [multiple of 0.01]
+├─ labels string[] [unique]
+├─ deliveryWindow array [>= 2 items]
+│  ├─ [0] string [format: date-time]
+│  ├─ [1] string [format: date-time]
+│  └─ additional items forbidden
+├─ metadata object
+│  └─ <other properties> string
+└─ giftNote string | null [<= 200 chars]

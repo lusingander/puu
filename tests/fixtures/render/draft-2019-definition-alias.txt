@@ -1,0 +1,7 @@
+root object
+├─ old -> #/definitions/Status
+└─ new -> #/$defs/Status
+
+Definitions
+├─ #/definitions/Status integer
+└─ #/$defs/Status string

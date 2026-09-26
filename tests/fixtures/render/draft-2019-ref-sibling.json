@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$ref": "#/$defs/Base",
+  "maxProperties": 1,
+  "type": "object",
+  "properties": {
+    "extra": { "type": "string" }
+  },
+  "$defs": {
+    "Base": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "integer" }
+      }
+    }
+  }
+}

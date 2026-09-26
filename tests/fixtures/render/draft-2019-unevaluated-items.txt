@@ -1,0 +1,4 @@
+root array
+├─ [0] string
+├─ contains integer [>= 1 matches]
+└─ unevaluated items forbidden [evaluation-dependent] [evaluated by: items tuple] [contains does not mark items evaluated]

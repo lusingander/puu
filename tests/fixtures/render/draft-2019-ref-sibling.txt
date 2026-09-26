@@ -1,0 +1,6 @@
+root -> Base [type: object] [<= 1 properties]
+└─ extra string
+
+Definitions
+└─ Base object
+   └─ id integer

@@ -1,0 +1,7 @@
+root object
+└─ orderId string
+
+Definitions
+├─ Address object [closed]
+│  └─ city string [required]
+└─ Status string [enum: "pending" | "paid"]

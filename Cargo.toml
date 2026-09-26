@@ -1,0 +1,28 @@
+[package]
+name = "puu"
+version = "0.1.0"
+description = "Render JSON Schema for humans"
+authors = ["Kyosuke Fujimoto <kyoro.f@gmail.com>"]
+homepage = "https://github.com/lusingander/puu"
+repository = "https://github.com/lusingander/puu"
+readme = "README.md"
+license = "MIT"
+keywords = ["json-schema", "cli", "terminal"]
+categories = ["command-line-utilities"]
+edition = "2024"
+rust-version = "1.88.0"
+
+exclude = ["/.github", "/img", "/scripts", "/docs"]
+
+
+[dependencies]
+clap = { version = "4.6.7", features = ["derive"] }
+console = "0.16.6"
+fluent-uri = "0.4.1"
+serde_json = { version = "1.0.151", features = ["arbitrary_precision", "preserve_order"] }
+
+[dev-dependencies]
+assert_cmd = "2.2.2"
+predicates = { version = "3.1.4", default-features = false, features = ["diff"] }
+proptest = { version = "1.11.0", default-features = false, features = ["std"] }
+rstest = "0.27.0"

@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "properties": {
+    "known": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": {
+    "type": "integer",
+    "minimum": 0
+  }
+}

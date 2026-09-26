@@ -1,0 +1,7 @@
+root object [title: "Order"] [description: "Purchase orders shared across teams and systems. This sente…"] [default: {"status":"draft","items":[]}] [examples: 2 values] [deprecated]
+├─ id string [read only]
+├─ payload string [write only] [content encoding: base64] [content media type: application/json]
+│  └─ content schema object
+│     └─ status string
+└─ detached string
+   └─ content schema integer [ignored without contentMediaType]

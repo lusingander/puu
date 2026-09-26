@@ -1,0 +1,13 @@
+{
+  "type": "object",
+  "allOf": [
+    {
+      "properties": {
+        "x": {
+          "type": "string"
+        }
+      }
+    }
+  ],
+  "additionalProperties": false
+}

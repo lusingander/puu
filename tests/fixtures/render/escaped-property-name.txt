@@ -1,0 +1,2 @@
+root object
+└─ "line\nbreak" string

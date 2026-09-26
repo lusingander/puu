@@ -1,0 +1,11 @@
+{
+  "type": "array",
+  "prefixItems": [
+    true,
+    false,
+    {
+      "type": "boolean"
+    }
+  ],
+  "items": true
+}

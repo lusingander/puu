@@ -1,0 +1,11 @@
+{
+  "type": "object",
+  "properties": {
+    "z": {
+      "type": "number"
+    },
+    "a": {
+      "type": "string"
+    }
+  }
+}

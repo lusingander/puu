@@ -1,0 +1,12 @@
+root object [resource: https://example.test/schemas/root.json]
+├─ shared -> shared
+├─ child -> https://example.test/schemas/parts/child.json
+└─ childValue -> #/$defs/child/properties/value
+
+Definitions
+├─ shared string
+└─ child object [resource: https://example.test/schemas/parts/child.json]
+   ├─ value integer
+   ├─ self -> https://example.test/schemas/parts/child.json [recursive]
+   ├─ sharedFromParent -> shared
+   └─ ownValue -> #/$defs/child/properties/value

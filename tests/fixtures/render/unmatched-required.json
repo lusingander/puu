@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "properties": {
+    "known": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "known",
+    "ghost"
+  ]
+}

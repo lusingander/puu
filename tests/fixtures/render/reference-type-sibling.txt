@@ -1,0 +1,4 @@
+root -> Base [type: object] [<= 3 properties]
+
+Definitions
+└─ Base object

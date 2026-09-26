@@ -1,0 +1,8 @@
+root object
+├─ defaultCount array
+│  └─ contains string [>= 1 matches]
+├─ optionalMatch array
+│  └─ contains string [>= 0 matches] [pattern: "^x-"]
+├─ capped array
+│  └─ contains integer [1..3 matches]
+└─ withoutContains array [ignored: minContains, maxContains]

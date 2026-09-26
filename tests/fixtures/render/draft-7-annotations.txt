@@ -1,0 +1,1 @@
+root string [title: "Legacy payload"] [read only] [content media type: application/json] [uninterpreted: $vocabulary, deprecated, contentSchema]

@@ -1,0 +1,1 @@
+root string[] [uninterpreted: prefixItems] [ignored: additionalItems]

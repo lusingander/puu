@@ -1,0 +1,11 @@
+{
+  "properties": {
+    "user": {
+      "properties": {
+        "age": {
+          "minLength": "one"
+        }
+      }
+    }
+  }
+}

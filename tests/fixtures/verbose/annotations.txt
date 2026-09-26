@@ -1,0 +1,7 @@
+root object [title: "Order"] [description: "Purchase orders shared across teams and systems. This sentence makes the summary longer than the normal display limit."] [default: {"status":"draft","items":[]}] [examples: [{"id":"A-100"},{"id":"B-200"}]] [deprecated] [$comment: "Used by schema maintainers only. Keep this out of the compact view."] [$vocabulary: https://json-schema.org/draft/2020-12/vocab/core (required), https://example.test/vocab/order (optional)]
+├─ id string [read only]
+├─ payload string [write only] [content encoding: base64] [content media type: application/json]
+│  └─ content schema object
+│     └─ status string
+└─ detached string
+   └─ content schema integer [ignored without contentMediaType]

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "array",
+  "items": [
+    { "type": "string" },
+    { "$ref": "#/$defs/Amount" },
+    { "$ref": "#/items/0" }
+  ],
+  "additionalItems": false,
+  "$defs": {
+    "Amount": { "type": "integer", "minimum": 0 }
+  }
+}

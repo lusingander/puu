@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/schemas/root.json",
+  "type": "object",
+  "properties": {
+    "shared": {
+      "$ref": "#/$defs/shared"
+    },
+    "child": {
+      "$ref": "parts/child.json"
+    },
+    "childValue": {
+      "$ref": "parts/child.json#/properties/value"
+    }
+  },
+  "$defs": {
+    "shared": {
+      "type": "string"
+    },
+    "child": {
+      "$id": "parts/child.json",
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "integer"
+        },
+        "self": {
+          "$ref": "#"
+        },
+        "sharedFromParent": {
+          "$ref": "../root.json#/$defs/shared"
+        },
+        "ownValue": {
+          "$ref": "#/properties/value"
+        }
+      }
+    }
+  }
+}

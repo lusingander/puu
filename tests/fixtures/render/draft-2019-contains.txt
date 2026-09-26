@@ -1,0 +1,2 @@
+root array
+└─ contains object [>= 2 matches] [required names: "id"]

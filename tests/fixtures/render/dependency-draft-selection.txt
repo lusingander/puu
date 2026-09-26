@@ -1,0 +1,2 @@
+root object [if "modernTrigger" exists, requires "modernTarget"] [uninterpreted: dependencies]
+└─ when property "modernSchema" exists <type unspecified> [required names: "modernField"]

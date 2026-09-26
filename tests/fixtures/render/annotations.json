@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$vocabulary": {
+    "https://json-schema.org/draft/2020-12/vocab/core": true,
+    "https://example.test/vocab/order": false
+  },
+  "$comment": "Used by schema maintainers only.\nKeep this out of the compact view.",
+  "title": "Order",
+  "description": "Purchase orders shared across teams and systems.\nThis sentence makes the summary longer than the normal display limit.",
+  "type": "object",
+  "default": {
+    "status": "draft",
+    "items": []
+  },
+  "examples": [
+    {
+      "id": "A-100"
+    },
+    {
+      "id": "B-200"
+    }
+  ],
+  "deprecated": true,
+  "properties": {
+    "id": {
+      "type": "string",
+      "readOnly": true
+    },
+    "payload": {
+      "type": "string",
+      "writeOnly": true,
+      "contentEncoding": "base64",
+      "contentMediaType": "application/json",
+      "contentSchema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "detached": {
+      "type": "string",
+      "contentSchema": {
+        "type": "integer"
+      }
+    }
+  }
+}

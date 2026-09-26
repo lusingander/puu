@@ -1,0 +1,9 @@
+root object
+├─ shipping object
+│  └─ value -> #/properties/shipping/$defs/Value
+└─ billing object
+   └─ value -> #/properties/billing/$defs/Value
+
+Definitions
+├─ #/properties/shipping/$defs/Value string [>= 1 chars]
+└─ #/properties/billing/$defs/Value integer [>= 0]

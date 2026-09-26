@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "HighValue": {
+      "type": "number",
+      "minimum": 100
+    }
+  },
+  "type": "array",
+  "items": {
+    "type": "number"
+  },
+  "contains": {
+    "$ref": "#/$defs/HighValue"
+  },
+  "minContains": 2,
+  "maxContains": 4
+}

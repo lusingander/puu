@@ -1,0 +1,5 @@
+root object
+├─ slug string [1..32 chars] [pattern: "^[a-z0-9-]+$"]
+├─ code string [<= 8 chars]
+├─ label <type unspecified> [>= 2 chars]
+└─ id string [format: uuid]

@@ -1,0 +1,5 @@
+root object [if "token" exists, requires "expiresAt"] [if "legacy" exists, requires nothing]
+├─ token string
+├─ expiresAt string [format: date-time]
+└─ when property "country" exists <type unspecified>
+   └─ postalCode string

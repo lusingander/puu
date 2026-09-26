@@ -1,0 +1,11 @@
+root object [closed] [if "creditCard" exists, requires "billingAddress"] [if "billingAddress" exists, requires "creditCard"] [if "legacy" exists, requires nothing]
+├─ id string [required]
+├─ creditCard string
+├─ billingAddress string
+├─ <properties matching "^x-"> -> MetadataValue
+├─ <properties matching "^count-"> integer [>= 0]
+└─ <property names> -> PropertyName
+
+Definitions
+├─ MetadataValue string | number | boolean
+└─ PropertyName string [<= 32 chars] [pattern: "^[A-Za-z][A-Za-z0-9_-]*$"]

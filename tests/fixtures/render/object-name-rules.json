@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "MetadataValue": {
+      "type": ["string", "number", "boolean"]
+    },
+    "PropertyName": {
+      "type": "string",
+      "maxLength": 32,
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+    }
+  },
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "creditCard": {
+      "type": "string"
+    },
+    "billingAddress": {
+      "type": "string"
+    }
+  },
+  "required": ["id"],
+  "patternProperties": {
+    "^x-": {
+      "$ref": "#/$defs/MetadataValue"
+    },
+    "^count-": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "propertyNames": {
+    "$ref": "#/$defs/PropertyName"
+  },
+  "dependentRequired": {
+    "creditCard": ["billingAddress"],
+    "billingAddress": ["creditCard"],
+    "legacy": []
+  },
+  "additionalProperties": false
+}

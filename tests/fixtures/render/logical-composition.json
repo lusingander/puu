@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "BaseRecord": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      },
+      "required": ["id"]
+    }
+  },
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "#/$defs/BaseRecord"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "active": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    }
+  ],
+  "anyOf": [
+    {
+      "required": ["email"]
+    },
+    {
+      "required": ["phone"]
+    }
+  ],
+  "oneOf": [
+    {
+      "$defs": {
+        "PersonalKind": {
+          "const": "personal"
+        }
+      },
+      "properties": {
+        "kind": {
+          "$ref": "#/oneOf/0/$defs/PersonalKind"
+        }
+      }
+    },
+    {
+      "properties": {
+        "kind": {
+          "const": "business"
+        }
+      }
+    }
+  ],
+  "not": {
+    "required": ["deletedAt"]
+  }
+}

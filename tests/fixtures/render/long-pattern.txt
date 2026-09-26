@@ -1,0 +1,2 @@
+root string
+└─ pattern "^abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ$"

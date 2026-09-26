@@ -1,0 +1,8 @@
+{
+  "$ref": "#/$defs/Base",
+  "type": "object",
+  "maxProperties": 3,
+  "$defs": {
+    "Base": { "type": "object" }
+  }
+}

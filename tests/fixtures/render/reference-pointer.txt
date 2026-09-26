@@ -1,0 +1,15 @@
+root object
+├─ first -> a/b
+├─ alias -> #/properties/first
+├─ tilde -> tilde~key
+├─ emptyName -> #/$defs/
+├─ encoded -> a/b
+├─ emptyRef -> root [recursive]
+├─ notSchema -> #/properties [unresolved]
+├─ anchor -> #Value [unresolved]
+└─ badEscape -> #/$defs/a~2b [unresolved]
+
+Definitions
+├─ a/b string
+├─ tilde~key integer
+└─ #/$defs/ boolean

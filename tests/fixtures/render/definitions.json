@@ -1,0 +1,20 @@
+{
+  "type": "object",
+  "properties": {
+    "orderId": { "type": "string" }
+  },
+  "$defs": {
+    "Address": {
+      "type": "object",
+      "properties": {
+        "city": { "type": "string" }
+      },
+      "required": ["city"],
+      "additionalProperties": false
+    },
+    "Status": {
+      "type": "string",
+      "enum": ["pending", "paid"]
+    }
+  }
+}

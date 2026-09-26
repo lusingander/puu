@@ -1,0 +1,9 @@
+root object [resource: https://example.test/root.json]
+├─ rootValue -> rootValue
+└─ childValue -> #/$defs/child/properties/value
+
+Definitions
+├─ rootValue string [anchor: value]
+└─ child object [resource: https://example.test/child.json]
+   ├─ value integer [anchor: value]
+   └─ rootValue -> rootValue

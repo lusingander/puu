@@ -1,0 +1,16 @@
+root object
+├─ home -> Address [required]
+├─ office -> Address
+├─ manager -> Person [required]
+├─ limitedAddress -> Address [<= 2 properties]
+├─ paidStatus -> Status [const: "paid"]
+├─ missing -> #/$defs/Unknown [unresolved]
+└─ remote -> https://example.test/common.json#/$defs/Address [external]
+
+Definitions
+├─ Address object [closed]
+│  └─ city string [required]
+├─ Person object
+│  ├─ name string [required]
+│  └─ manager -> Person [recursive]
+└─ Status string [enum: "pending" | "paid"]

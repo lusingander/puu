@@ -1,0 +1,22 @@
+{
+  "type": "object",
+  "properties": {
+    "slug": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32,
+      "pattern": "^[a-z0-9-]+$"
+    },
+    "code": {
+      "type": "string",
+      "maxLength": 8
+    },
+    "label": {
+      "minLength": 2
+    },
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    }
+  }
+}
