@@ -11,6 +11,7 @@ use std::{
     io::{self, Read, Write},
     path::{Path, PathBuf},
     process,
+    time::Duration,
 };
 
 use clap::{ColorChoice, Parser};
@@ -21,7 +22,7 @@ use crate::dialect::Dialect;
 #[derive(Parser)]
 #[command(version)]
 struct Args {
-    /// JSON Schema file to render, or '-' to read from standard input
+    /// JSON Schema file or URL to render, or '-' to read from standard input
     schema: PathBuf,
 
     /// Override the JSON Schema draft
@@ -69,9 +70,32 @@ fn read_input(path: &Path) -> Result<String, String> {
             .read_to_string(&mut input)
             .map_err(|error| format!("cannot read standard input: {error}"))?;
         Ok(input)
+    } else if let Some(url) = path
+        .to_str()
+        .filter(|value| value.starts_with("http://") || value.starts_with("https://"))
+    {
+        read_url(url)
     } else {
         fs::read_to_string(path).map_err(|error| format!("cannot read {}: {error}", path.display()))
     }
+}
+
+fn read_url(url: &str) -> Result<String, String> {
+    let agent: ureq::Agent = ureq::Agent::config_builder()
+        .timeout_global(Some(Duration::from_secs(30)))
+        .build()
+        .into();
+    let mut response = agent
+        .get(url)
+        .call()
+        .map_err(|error| format!("cannot read {url}: {error}"))?;
+
+    response
+        .body_mut()
+        .with_config()
+        .limit(10 * 1024 * 1024)
+        .read_to_string()
+        .map_err(|error| format!("cannot read {url}: {error}"))
 }
 
 fn write_output(output: &str) -> Result<(), String> {
