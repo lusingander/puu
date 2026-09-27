@@ -40,10 +40,11 @@ Pre-built binaries are available from the [releases page](https://github.com/lus
 puu [OPTIONS] <SCHEMA>
 ```
 
-`SCHEMA` is either the path to a JSON Schema file or `-` to read from standard input.
+`SCHEMA` is the path or HTTP(S) URL of a JSON Schema, or `-` to read from standard input.
 
 ```
 puu schema.json
+puu https://json.schemastore.org/package.json
 puu - < schema.json
 puu --draft 7 schema.json
 ```
@@ -56,7 +57,7 @@ Puu - Render JSON Schema for humans 🌳
 Usage: puu [OPTIONS] <SCHEMA>
 
 Arguments:
-  <SCHEMA>  JSON Schema file to render, or '-' to read from standard input
+  <SCHEMA>  JSON Schema file or URL to render, or '-' to read from standard input
 
 Options:
   -d, --draft <DRAFT>  Override the JSON Schema draft [possible values: 2020-12, 2019-09, 7]
