@@ -34,7 +34,7 @@ struct Args {
     pointer: Option<String>,
 
     /// Limit display tree depth, counting the root as depth 0
-    #[arg(short = 'm', long, value_name = "N")]
+    #[arg(short = 'L', long, value_name = "N")]
     max_depth: Option<usize>,
 
     /// Show full annotations and uninterpreted values

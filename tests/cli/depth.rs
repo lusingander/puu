@@ -39,7 +39,7 @@ fn accepts_short_maximum_depth_option() {
     let expected = fs::read(fixture("depth", "zero", "txt")).expect("expected output should exist");
 
     command()
-        .args(["-m", "0"])
+        .args(["-L", "0"])
         .arg(fixture("depth", "zero", "json"))
         .assert()
         .success()
