@@ -64,7 +64,7 @@ Arguments:
 Options:
   -d, --draft <DRAFT>      Override the JSON Schema draft [possible values: 2020-12, 2019-09, 7]
   -p, --pointer <POINTER>  Render the schema at a JSON Pointer
-      --max-depth <N>      Limit display tree depth, counting the root as depth 0
+  -m, --max-depth <N>      Limit display tree depth, counting the root as depth 0
   -v, --verbose            Show full annotations and uninterpreted values
   -c, --color <COLOR>      Control colored tree output [default: auto] [possible values: auto, always, never]
   -h, --help               Print help
@@ -77,7 +77,7 @@ Options:
 
 ### Maximum display depth
 
-`--max-depth N` limits the indentation depth of the rendered tree, counting each root as depth 0. When a node at the limit has children, Puu displays `… [children omitted]` below it instead of silently dropping the children.
+`-m N` / `--max-depth N` limits the indentation depth of the rendered tree, counting each root as depth 0. When a node at the limit has children, Puu displays `… [children omitted]` below it instead of silently dropping the children.
 
 ### Supported scope
 
