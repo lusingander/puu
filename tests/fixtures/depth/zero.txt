@@ -1,0 +1,5 @@
+root object
+└─ … [children omitted]
+
+Definitions
+└─ … [children omitted]

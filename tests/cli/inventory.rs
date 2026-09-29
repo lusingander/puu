@@ -10,6 +10,7 @@ use rstest::rstest;
 #[rstest]
 #[case::render("render", "txt")]
 #[case::error("error", "error")]
+#[case::depth("depth", "txt")]
 fn fixture_inputs_and_expectations_are_paired(
     #[case] group: &str,
     #[case] expected_extension: &str,
