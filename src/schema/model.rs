@@ -1,6 +1,13 @@
+use std::collections::HashSet;
+
 use serde_json::{Number, Value};
 
 use crate::dialect::Dialect;
+
+pub struct ParsedDocument {
+    pub root: Schema,
+    pub value_locations: HashSet<String>,
+}
 
 pub struct Schema {
     pub location: String,
@@ -69,61 +76,79 @@ impl Schema {
         for (name, definition) in &self.definitions {
             visit(SchemaChildRole::Definition(name), definition);
         }
-        for (_, property) in &self.properties {
-            visit(SchemaChildRole::Other, property);
+        for (name, property) in &self.properties {
+            visit(SchemaChildRole::Property(name), property);
         }
-        for (_, pattern) in &self.object_constraints.pattern_properties {
-            visit(SchemaChildRole::Other, pattern);
+        for (pattern, schema) in &self.object_constraints.pattern_properties {
+            visit(SchemaChildRole::PatternProperty(pattern), schema);
         }
         if let Some(property_names) = &self.object_constraints.property_names {
-            visit(SchemaChildRole::Other, property_names);
+            visit(SchemaChildRole::PropertyNames, property_names);
         }
         if let Some(additional) = &self.object_constraints.additional_properties {
-            visit(SchemaChildRole::Other, additional);
+            visit(SchemaChildRole::AdditionalProperties, additional);
         }
         if let Some(unevaluated) = &self.object_constraints.unevaluated_properties {
-            visit(SchemaChildRole::Other, unevaluated);
+            visit(SchemaChildRole::UnevaluatedProperties, unevaluated);
         }
-        for (_, dependent_schema) in &self.object_constraints.dependent_schemas {
-            visit(SchemaChildRole::Other, dependent_schema);
+        for (name, dependent_schema) in &self.object_constraints.dependent_schemas {
+            visit(SchemaChildRole::DependentSchema(name), dependent_schema);
         }
         if let Some(items) = &self.array_constraints.items {
-            visit(SchemaChildRole::Other, items);
+            visit(SchemaChildRole::Items, items);
         }
         if let Some(prefix_items) = &self.array_constraints.prefix_items {
-            for item in prefix_items {
-                visit(SchemaChildRole::Other, item);
+            for (index, item) in prefix_items.iter().enumerate() {
+                visit(SchemaChildRole::PrefixItem(index), item);
             }
         }
         if let Some(contains) = &self.array_constraints.contains {
-            visit(SchemaChildRole::Other, contains);
+            visit(SchemaChildRole::Contains, contains);
         }
         if let Some(unevaluated) = &self.array_constraints.unevaluated_items {
-            visit(SchemaChildRole::Other, unevaluated);
+            visit(SchemaChildRole::UnevaluatedItems, unevaluated);
         }
-        for branch in &self.logical_applicators.all_of {
-            visit(SchemaChildRole::Other, branch);
+        for (index, branch) in self.logical_applicators.all_of.iter().enumerate() {
+            visit(
+                SchemaChildRole::LogicalBranch {
+                    keyword: "allOf",
+                    index,
+                },
+                branch,
+            );
         }
-        for branch in &self.logical_applicators.any_of {
-            visit(SchemaChildRole::Other, branch);
+        for (index, branch) in self.logical_applicators.any_of.iter().enumerate() {
+            visit(
+                SchemaChildRole::LogicalBranch {
+                    keyword: "anyOf",
+                    index,
+                },
+                branch,
+            );
         }
-        for branch in &self.logical_applicators.one_of {
-            visit(SchemaChildRole::Other, branch);
+        for (index, branch) in self.logical_applicators.one_of.iter().enumerate() {
+            visit(
+                SchemaChildRole::LogicalBranch {
+                    keyword: "oneOf",
+                    index,
+                },
+                branch,
+            );
         }
         if let Some(not) = &self.logical_applicators.not {
-            visit(SchemaChildRole::Other, not);
+            visit(SchemaChildRole::Not, not);
         }
         if let Some(condition) = &self.conditional_applicators.condition {
-            visit(SchemaChildRole::Other, condition);
+            visit(SchemaChildRole::Condition, condition);
         }
         if let Some(then_branch) = &self.conditional_applicators.then_branch {
-            visit(SchemaChildRole::Other, then_branch);
+            visit(SchemaChildRole::Then, then_branch);
         }
         if let Some(else_branch) = &self.conditional_applicators.else_branch {
-            visit(SchemaChildRole::Other, else_branch);
+            visit(SchemaChildRole::Else, else_branch);
         }
         if let Some(content_schema) = &self.annotations.content_schema {
-            visit(SchemaChildRole::Other, content_schema);
+            visit(SchemaChildRole::ContentSchema, content_schema);
         }
     }
 
@@ -192,7 +217,22 @@ impl Schema {
 
 pub enum SchemaChildRole<'a> {
     Definition(&'a str),
-    Other,
+    Property(&'a str),
+    PatternProperty(&'a str),
+    PropertyNames,
+    AdditionalProperties,
+    UnevaluatedProperties,
+    DependentSchema(&'a str),
+    PrefixItem(usize),
+    Items,
+    Contains,
+    UnevaluatedItems,
+    LogicalBranch { keyword: &'static str, index: usize },
+    Not,
+    Condition,
+    Then,
+    Else,
+    ContentSchema,
 }
 
 pub struct Reference {

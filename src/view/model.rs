@@ -1,3 +1,32 @@
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[allow(dead_code)]
+pub enum DefinitionsMode {
+    All,
+    Referenced,
+    None,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct ViewOptions {
+    pub verbose: bool,
+    pub max_depth: Option<usize>,
+    pub definitions: DefinitionsMode,
+    pub expand_refs: bool,
+    pub annotations: bool,
+}
+
+impl Default for ViewOptions {
+    fn default() -> Self {
+        Self {
+            verbose: false,
+            max_depth: None,
+            definitions: DefinitionsMode::All,
+            expand_refs: false,
+            annotations: true,
+        }
+    }
+}
+
 pub struct ViewDocument {
     pub roots: Vec<ViewNode>,
 }
@@ -41,6 +70,7 @@ pub struct ViewDetail {
 pub enum ViewDetailKind {
     Constraint,
     Annotation,
+    Metadata,
     Marker,
 }
 
@@ -55,6 +85,13 @@ impl ViewDetail {
     pub fn annotation(text: impl Into<String>) -> Self {
         Self {
             kind: ViewDetailKind::Annotation,
+            text: text.into(),
+        }
+    }
+
+    pub fn metadata(text: impl Into<String>) -> Self {
+        Self {
+            kind: ViewDetailKind::Metadata,
             text: text.into(),
         }
     }

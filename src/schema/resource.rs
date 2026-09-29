@@ -238,7 +238,7 @@ fn collect_registry_at(
         if result.is_ok() {
             let label = match role {
                 SchemaChildRole::Definition(name) => schema.definition_label(name, child),
-                SchemaChildRole::Other => &child.location,
+                _ => &child.location,
             };
             result = collect_registry(child, label, active_resources, registry);
         }
@@ -427,7 +427,7 @@ fn encode_uri_fragment(value: &str) -> String {
     encoded
 }
 
-fn canonical_local_pointer(uri: &str) -> Option<String> {
+pub fn canonical_local_pointer(uri: &str) -> Option<String> {
     let fragment = uri.strip_prefix('#')?;
     let mut decoded_bytes = Vec::with_capacity(fragment.len());
     let mut bytes = fragment.bytes();

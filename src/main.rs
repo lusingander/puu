@@ -29,6 +29,10 @@ struct Args {
     #[arg(short, long, value_enum)]
     draft: Option<Dialect>,
 
+    /// Render the schema at a JSON Pointer
+    #[arg(short, long)]
+    pointer: Option<String>,
+
     /// Show full annotations and uninterpreted values
     #[arg(short, long)]
     verbose: bool,
@@ -49,8 +53,23 @@ fn run() -> Result<(), String> {
     let args = Args::parse();
     configure_color(args.color);
     let input = read_input(&args.schema)?;
-    let schema = schema::parse(&input, args.draft).map_err(|error| error.to_string())?;
-    let document = view::from_schema(&schema, args.verbose);
+    let parsed = schema::parse(&input, args.draft).map_err(|error| error.to_string())?;
+    let index = schema::SchemaIndex::new(&parsed);
+    let root = match args.pointer.as_deref() {
+        Some(pointer) => index.select(pointer).map_err(|error| error.to_string())?,
+        None => index.get("#").expect("the document root should be indexed"),
+    };
+    let options = view::ViewOptions {
+        verbose: args.verbose,
+        ..view::ViewOptions::default()
+    };
+    let document = view::from_schema(
+        &parsed.root,
+        root.schema,
+        &root.display_name,
+        args.pointer.is_some(),
+        &options,
+    );
     let tree = text::render(&document, &text::ColorTheme::default());
     write_output(&tree)
 }

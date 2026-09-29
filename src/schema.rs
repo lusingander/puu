@@ -1,8 +1,12 @@
 mod error;
+mod index;
 mod model;
 mod parse;
 mod resource;
 
-pub use model::SchemaChildRole;
-pub use model::{ArrayConstraints, Reference, ReferenceKind, ReferenceTarget, Schema, SchemaKind};
+pub use index::SchemaIndex;
+pub use model::{
+    ArrayConstraints, ParsedDocument, Reference, ReferenceKind, ReferenceTarget, Schema,
+    SchemaChildRole, SchemaKind,
+};
 pub use parse::parse;

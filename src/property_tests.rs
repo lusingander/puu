@@ -388,8 +388,12 @@ fn arbitrary_draft() -> impl Strategy<Value = Option<Dialect>> {
 }
 
 fn render_pipeline(input: &str, draft: Option<Dialect>, verbose: bool) -> Result<String, String> {
-    let schema = schema::parse(input, draft).map_err(|error| error.to_string())?;
-    let document = view::from_schema(&schema, verbose);
+    let parsed = schema::parse(input, draft).map_err(|error| error.to_string())?;
+    let options = view::ViewOptions {
+        verbose,
+        ..view::ViewOptions::default()
+    };
+    let document = view::from_schema(&parsed.root, &parsed.root, "root", false, &options);
     let plain = console::Style::new();
     let theme = text::ColorTheme {
         key: plain.clone(),
@@ -397,6 +401,7 @@ fn render_pipeline(input: &str, draft: Option<Dialect>, verbose: bool) -> Result
         connector: plain.clone(),
         constraint: plain.clone(),
         annotation: plain.clone(),
+        metadata: plain.clone(),
         marker: plain,
     };
     Ok(text::render(&document, &theme))
@@ -404,9 +409,14 @@ fn render_pipeline(input: &str, draft: Option<Dialect>, verbose: bool) -> Result
 
 fn exercise_pipeline(input: &str, draft: Option<Dialect>) {
     match schema::parse(input, draft) {
-        Ok(schema) => {
+        Ok(parsed) => {
             for verbose in [false, true] {
-                let document = view::from_schema(&schema, verbose);
+                let options = view::ViewOptions {
+                    verbose,
+                    ..view::ViewOptions::default()
+                };
+                let document =
+                    view::from_schema(&parsed.root, &parsed.root, "root", false, &options);
                 let _ = text::render(&document, &text::ColorTheme::default());
             }
         }

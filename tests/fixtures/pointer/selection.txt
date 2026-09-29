@@ -1,0 +1,7 @@
+User object [location: #/$defs/User]
+└─ id string
+
+Definitions
+├─ User object
+│  └─ id string
+└─ a/b~c integer
