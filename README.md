@@ -50,8 +50,6 @@ puu --draft 7 schema.json
 puu --pointer '#/$defs/User' schema.json
 ```
 
-`--pointer` renders a specific schema from the document. It accepts `#`, URI fragment JSON Pointers such as `#/$defs/User`, and JSON Pointers without the fragment marker such as `/$defs/User`. Quote values beginning with `#` in the shell.
-
 ### Options
 
 ```
@@ -70,6 +68,10 @@ Options:
   -h, --help               Print help
   -V, --version            Print version
 ```
+
+### Pointer selection
+
+`--pointer` renders a specific schema from the document. It accepts `#`, URI fragment JSON Pointers such as `#/$defs/User`, and JSON Pointers without the fragment marker such as `/$defs/User`. Quote values beginning with `#` in the shell.
 
 ### Supported scope
 
