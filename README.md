@@ -62,7 +62,7 @@ Arguments:
 
 Options:
   -d, --draft <DRAFT>      Override the JSON Schema draft [possible values: 2020-12, 2019-09, 7]
-      --pointer <POINTER>  Render the schema at a JSON Pointer
+  -p, --pointer <POINTER>  Render the schema at a JSON Pointer
   -v, --verbose            Show full annotations and uninterpreted values
   -c, --color <COLOR>      Control colored tree output [default: auto] [possible values: auto, always, never]
   -h, --help               Print help

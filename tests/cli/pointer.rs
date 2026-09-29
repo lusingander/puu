@@ -19,6 +19,19 @@ fn renders_selected_schema_and_global_definitions() {
         .stderr("");
 }
 
+#[test]
+fn accepts_short_pointer_option() {
+    command()
+        .args(["-p", "#/properties/flag"])
+        .arg(fixture("pointer", "selection", "json"))
+        .assert()
+        .success()
+        .stdout(predicate::str::starts_with(
+            "flag any [location: #/properties/flag]\n",
+        ))
+        .stderr("");
+}
+
 #[rustfmt::skip]
 #[rstest]
 #[case("#", "root <type unspecified> [location: #]\n")]

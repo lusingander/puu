@@ -30,7 +30,7 @@ struct Args {
     draft: Option<Dialect>,
 
     /// Render the schema at a JSON Pointer
-    #[arg(long)]
+    #[arg(short, long)]
     pointer: Option<String>,
 
     /// Show full annotations and uninterpreted values
