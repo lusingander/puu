@@ -34,6 +34,19 @@ fn leaves_a_leaf_unchanged() {
         .stderr("");
 }
 
+#[test]
+fn accepts_short_maximum_depth_option() {
+    let expected = fs::read(fixture("depth", "zero", "txt")).expect("expected output should exist");
+
+    command()
+        .args(["-m", "0"])
+        .arg(fixture("depth", "zero", "json"))
+        .assert()
+        .success()
+        .stdout(expected)
+        .stderr("");
+}
+
 #[rustfmt::skip]
 #[rstest]
 #[case("-1", "unexpected argument")]
