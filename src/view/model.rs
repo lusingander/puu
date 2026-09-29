@@ -43,6 +43,7 @@ pub enum ViewNodeRole {
     Schema(SchemaNodeRole),
     Constraint,
     Section,
+    Omission,
 }
 
 pub enum SchemaNodeRole {

@@ -407,6 +407,19 @@ fn render_pipeline(input: &str, draft: Option<Dialect>, verbose: bool) -> Result
     Ok(text::render(&document, &theme))
 }
 
+fn respects_max_depth(node: &view::ViewNode, depth: usize, max_depth: usize) -> bool {
+    match node.role {
+        view::ViewNodeRole::Omission => depth == max_depth + 1 && node.children.is_empty(),
+        _ => {
+            depth <= max_depth
+                && node
+                    .children
+                    .iter()
+                    .all(|child| respects_max_depth(child, depth + 1, max_depth))
+        }
+    }
+}
+
 fn exercise_pipeline(input: &str, draft: Option<Dialect>) {
     match schema::parse(input, draft) {
         Ok(parsed) => {
@@ -469,6 +482,28 @@ proptest! {
             output
                 .chars()
                 .all(|character| character == '\n' || !character.is_control())
+        );
+    }
+
+    #[test]
+    fn maximum_depth_bounds_every_rendered_tree(
+        value in renderable_schema(),
+        max_depth in 0_usize..6,
+    ) {
+        let input = serde_json::to_string(&value).expect("generated schema should serialize");
+        let parsed = schema::parse(&input, Some(Dialect::Draft202012))
+            .expect("renderable schema should parse");
+        let options = view::ViewOptions {
+            max_depth: Some(max_depth),
+            ..view::ViewOptions::default()
+        };
+        let document = view::from_schema(&parsed.root, &parsed.root, "root", false, &options);
+
+        prop_assert!(
+            document
+                .roots
+                .iter()
+                .all(|root| respects_max_depth(root, 0, max_depth))
         );
     }
 }

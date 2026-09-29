@@ -71,6 +71,7 @@ fn render_node(
         ) => (&theme.key, &theme.value),
         ViewNodeRole::Constraint => (&theme.constraint, &theme.constraint),
         ViewNodeRole::Section => (&theme.value, &theme.value),
+        ViewNodeRole::Omission => (&theme.marker, &theme.marker),
     };
     if let Some(key) = &node.key {
         write!(
