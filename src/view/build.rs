@@ -5,13 +5,13 @@ use crate::{
         ArrayConstraints, Reference, ReferenceKind, ReferenceTarget, Schema, SchemaChildRole,
         SchemaKind,
     },
-    view::model::{SchemaNodeRole, ViewDetail, ViewDocument, ViewNode, ViewNodeRole},
+    view::model::{SchemaNodeRole, ViewDetail, ViewDocument, ViewNode, ViewNodeRole, ViewOptions},
 };
 
-pub fn from_schema(schema: &Schema, verbose: bool) -> ViewDocument {
-    let mut roots = vec![schema_node(schema, "root", false, true, verbose)];
+pub fn from_schema(schema: &Schema, options: &ViewOptions) -> ViewDocument {
+    let mut roots = vec![schema_node(schema, "root", false, true, options)];
     let mut definitions = Vec::new();
-    collect_definitions(schema, &mut definitions, verbose);
+    collect_definitions(schema, &mut definitions, options);
     if !definitions.is_empty() {
         roots.push(ViewNode {
             role: ViewNodeRole::Section,
@@ -24,27 +24,27 @@ pub fn from_schema(schema: &Schema, verbose: bool) -> ViewDocument {
     ViewDocument { roots }
 }
 
-fn collect_definitions(schema: &Schema, output: &mut Vec<ViewNode>, verbose: bool) {
+fn collect_definitions(schema: &Schema, output: &mut Vec<ViewNode>, options: &ViewOptions) {
     schema.for_each_child(|role, child| {
         if let SchemaChildRole::Definition(name) = role {
             output.push(definition_node(
                 child,
                 schema.definition_label(name, child),
-                verbose,
+                options,
             ));
         }
-        collect_definitions(child, output, verbose);
+        collect_definitions(child, output, options);
     });
 }
 
-fn definition_node(schema: &Schema, name: &str, verbose: bool) -> ViewNode {
+fn definition_node(schema: &Schema, name: &str, options: &ViewOptions) -> ViewNode {
     schema_node_with_role(
         schema,
         name,
         false,
         false,
         SchemaNodeRole::Definition,
-        verbose,
+        options,
     )
 }
 
@@ -53,7 +53,7 @@ pub fn schema_node(
     name: &str,
     required: bool,
     root: bool,
-    verbose: bool,
+    options: &ViewOptions,
 ) -> ViewNode {
     schema_node_with_role(
         schema,
@@ -61,40 +61,40 @@ pub fn schema_node(
         required,
         root,
         SchemaNodeRole::Instance,
-        verbose,
+        options,
     )
 }
 
-pub fn pattern_property_node(schema: &Schema, pattern: &str, verbose: bool) -> ViewNode {
+pub fn pattern_property_node(schema: &Schema, pattern: &str, options: &ViewOptions) -> ViewNode {
     schema_node_with_role(
         schema,
         &format!("<properties matching {pattern:?}>"),
         false,
         false,
         SchemaNodeRole::PatternProperty,
-        verbose,
+        options,
     )
 }
 
-pub fn property_names_node(schema: &Schema, verbose: bool) -> ViewNode {
+pub fn property_names_node(schema: &Schema, options: &ViewOptions) -> ViewNode {
     schema_node_with_role(
         schema,
         "<property names>",
         false,
         false,
         SchemaNodeRole::PropertyName,
-        verbose,
+        options,
     )
 }
 
-pub fn contains_node(schema: &Schema, array: &ArrayConstraints, verbose: bool) -> ViewNode {
+pub fn contains_node(schema: &Schema, array: &ArrayConstraints, options: &ViewOptions) -> ViewNode {
     let mut node = schema_node_with_role(
         schema,
         "contains",
         false,
         false,
         SchemaNodeRole::Contains,
-        verbose,
+        options,
     );
     let count = match (&array.min_contains, &array.max_contains) {
         (Some(min), Some(max)) => format!("{min}..{max} matches"),
@@ -106,14 +106,18 @@ pub fn contains_node(schema: &Schema, array: &ArrayConstraints, verbose: bool) -
     node
 }
 
-pub fn content_schema_node(schema: &Schema, has_media_type: bool, verbose: bool) -> ViewNode {
+pub fn content_schema_node(
+    schema: &Schema,
+    has_media_type: bool,
+    options: &ViewOptions,
+) -> ViewNode {
     let mut node = schema_node_with_role(
         schema,
         "content schema",
         false,
         false,
         SchemaNodeRole::ContentSchema,
-        verbose,
+        options,
     );
     if !has_media_type {
         node.details
@@ -128,9 +132,9 @@ pub fn unevaluated_node(
     role: SchemaNodeRole,
     evaluation_sources: Vec<&str>,
     contains_note: Option<&str>,
-    verbose: bool,
+    options: &ViewOptions,
 ) -> ViewNode {
-    let mut node = schema_node_with_role(schema, name, false, false, role, verbose);
+    let mut node = schema_node_with_role(schema, name, false, false, role, options);
     node.value = match schema.kind {
         SchemaKind::Any => "allowed".to_owned(),
         SchemaKind::Never => "forbidden".to_owned(),
@@ -162,7 +166,7 @@ fn reference_node(reference: &Reference) -> ViewNode {
     }
 }
 
-pub fn logical_section(keyword: &str, branches: &[Schema], verbose: bool) -> ViewNode {
+pub fn logical_section(keyword: &str, branches: &[Schema], options: &ViewOptions) -> ViewNode {
     ViewNode {
         role: ViewNodeRole::Section,
         key: None,
@@ -178,32 +182,36 @@ pub fn logical_section(keyword: &str, branches: &[Schema], verbose: bool) -> Vie
                     false,
                     false,
                     SchemaNodeRole::LogicalBranch,
-                    verbose,
+                    options,
                 )
             })
             .collect(),
     }
 }
 
-pub fn not_node(schema: &Schema, verbose: bool) -> ViewNode {
+pub fn not_node(schema: &Schema, options: &ViewOptions) -> ViewNode {
     schema_node_with_role(
         schema,
         "not",
         false,
         false,
         SchemaNodeRole::LogicalBranch,
-        verbose,
+        options,
     )
 }
 
-pub fn dependent_schema_node(schema: &Schema, property_name: &str, verbose: bool) -> ViewNode {
+pub fn dependent_schema_node(
+    schema: &Schema,
+    property_name: &str,
+    options: &ViewOptions,
+) -> ViewNode {
     schema_node_with_role(
         schema,
         &format!("when property {property_name:?} exists"),
         false,
         false,
         SchemaNodeRole::DependentSchema,
-        verbose,
+        options,
     )
 }
 
@@ -212,9 +220,9 @@ pub fn conditional_node(
     keyword: &str,
     role: SchemaNodeRole,
     ignored_without_if: bool,
-    verbose: bool,
+    options: &ViewOptions,
 ) -> ViewNode {
-    let mut node = schema_node_with_role(schema, keyword, false, false, role, verbose);
+    let mut node = schema_node_with_role(schema, keyword, false, false, role, options);
     if ignored_without_if {
         node.details
             .insert(0, ViewDetail::marker("ignored without if"));
@@ -228,7 +236,7 @@ fn schema_node_with_role(
     required: bool,
     root: bool,
     role: SchemaNodeRole,
-    verbose: bool,
+    options: &ViewOptions,
 ) -> ViewNode {
     let key = match (&schema.kind, root) {
         (SchemaKind::Any | SchemaKind::Never, true) => None,
@@ -236,8 +244,8 @@ fn schema_node_with_role(
     };
     let primary_reference = primary_reference(schema);
     let value = schema_value(schema, primary_reference);
-    let details = crate::view::details::from_schema(schema, required, primary_reference, verbose);
-    let children = crate::view::children::from_schema(schema, verbose);
+    let details = crate::view::details::from_schema(schema, required, primary_reference, options);
+    let children = crate::view::children::from_schema(schema, options);
 
     ViewNode {
         role: ViewNodeRole::Schema(role),
@@ -498,7 +506,7 @@ pub fn add_annotation_details(schema: &Schema, verbose: bool, details: &mut Vec<
                 })
                 .collect::<Vec<_>>()
                 .join(", ");
-            details.push(ViewDetail::annotation(format!(
+            details.push(ViewDetail::metadata(format!(
                 "$vocabulary: {}",
                 compact_text(&vocabulary, 240)
             )));

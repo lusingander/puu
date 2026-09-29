@@ -50,7 +50,11 @@ fn run() -> Result<(), String> {
     configure_color(args.color);
     let input = read_input(&args.schema)?;
     let schema = schema::parse(&input, args.draft).map_err(|error| error.to_string())?;
-    let document = view::from_schema(&schema, args.verbose);
+    let options = view::ViewOptions {
+        verbose: args.verbose,
+        ..view::ViewOptions::default()
+    };
+    let document = view::from_schema(&schema, &options);
     let tree = text::render(&document, &text::ColorTheme::default());
     write_output(&tree)
 }

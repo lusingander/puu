@@ -4,7 +4,7 @@ use crate::{
     schema::{Reference, Schema, SchemaKind},
     view::{
         build::{add_annotation_details, add_reference_details, compact_json, inline_enum},
-        model::ViewDetail,
+        model::{ViewDetail, ViewOptions},
     },
 };
 
@@ -12,17 +12,17 @@ pub fn from_schema(
     schema: &Schema,
     required: bool,
     primary_reference: Option<&Reference>,
-    verbose: bool,
+    options: &ViewOptions,
 ) -> Vec<ViewDetail> {
     let mut details = Vec::new();
     add_identity(schema, required, primary_reference, &mut details);
     add_object_constraints(schema, &mut details);
     add_array_constraints(schema, &mut details);
     add_string_constraints(schema, &mut details);
-    add_annotation_details(schema, verbose, &mut details);
+    add_annotation_details(schema, options.verbose, &mut details);
     add_number_constraints(schema, &mut details);
     add_value_constraints(schema, primary_reference.is_some(), &mut details);
-    add_keyword_markers(schema, verbose, &mut details);
+    add_keyword_markers(schema, options.verbose, &mut details);
     details
 }
 

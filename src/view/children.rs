@@ -7,20 +7,20 @@ use crate::{
             object_evaluation_sources, pattern_property_node, property_names_node, schema_node,
             simple_item_type, unevaluated_node,
         },
-        model::{SchemaNodeRole, ViewNode, ViewNodeRole},
+        model::{SchemaNodeRole, ViewNode, ViewNodeRole, ViewOptions},
     },
 };
 
-pub fn from_schema(schema: &Schema, verbose: bool) -> Vec<ViewNode> {
+pub fn from_schema(schema: &Schema, options: &ViewOptions) -> Vec<ViewNode> {
     let mut children = additional_reference_nodes(schema);
-    add_object_children(schema, verbose, &mut children);
-    add_array_children(schema, verbose, &mut children);
-    add_supplemental_children(schema, verbose, &mut children);
-    add_applicator_children(schema, verbose, &mut children);
+    add_object_children(schema, options, &mut children);
+    add_array_children(schema, options, &mut children);
+    add_supplemental_children(schema, options, &mut children);
+    add_applicator_children(schema, options, &mut children);
     children
 }
 
-fn add_object_children(schema: &Schema, verbose: bool, children: &mut Vec<ViewNode>) {
+fn add_object_children(schema: &Schema, options: &ViewOptions, children: &mut Vec<ViewNode>) {
     children.extend(
         schema
             .properties
@@ -36,7 +36,7 @@ fn add_object_children(schema: &Schema, verbose: bool, children: &mut Vec<ViewNo
                     &display_name,
                     schema.required_names.contains(property_name),
                     false,
-                    verbose,
+                    options,
                 )
             }),
     );
@@ -45,10 +45,10 @@ fn add_object_children(schema: &Schema, verbose: bool, children: &mut Vec<ViewNo
         object
             .pattern_properties
             .iter()
-            .map(|(pattern, schema)| pattern_property_node(schema, pattern, verbose)),
+            .map(|(pattern, schema)| pattern_property_node(schema, pattern, options)),
     );
     if let Some(property_names) = &object.property_names {
-        children.push(property_names_node(property_names, verbose));
+        children.push(property_names_node(property_names, options));
     }
     if let Some(additional) = &object.additional_properties
         && !matches!(additional.kind, SchemaKind::Any | SchemaKind::Never)
@@ -58,14 +58,14 @@ fn add_object_children(schema: &Schema, verbose: bool, children: &mut Vec<ViewNo
             "<other properties>",
             false,
             false,
-            verbose,
+            options,
         ));
     }
     children.extend(
         object
             .dependent_schemas
             .iter()
-            .map(|(name, schema)| dependent_schema_node(schema, name, verbose)),
+            .map(|(name, schema)| dependent_schema_node(schema, name, options)),
     );
     if let Some(unevaluated) = &object.unevaluated_properties {
         children.push(unevaluated_node(
@@ -74,12 +74,12 @@ fn add_object_children(schema: &Schema, verbose: bool, children: &mut Vec<ViewNo
             SchemaNodeRole::UnevaluatedProperties,
             object_evaluation_sources(schema),
             None,
-            verbose,
+            options,
         ));
     }
 }
 
-fn add_array_children(schema: &Schema, verbose: bool, children: &mut Vec<ViewNode>) {
+fn add_array_children(schema: &Schema, options: &ViewOptions, children: &mut Vec<ViewNode>) {
     let array = &schema.array_constraints;
     if let Some(prefix_items) = &array.prefix_items {
         for (index, item) in prefix_items.iter().enumerate() {
@@ -88,7 +88,7 @@ fn add_array_children(schema: &Schema, verbose: bool, children: &mut Vec<ViewNod
                 &format!("[{index}]"),
                 false,
                 false,
-                verbose,
+                options,
             ));
         }
     }
@@ -107,17 +107,17 @@ fn add_array_children(schema: &Schema, verbose: bool, children: &mut Vec<ViewNod
                 &format!("[{}..]", prefix_items.len()),
                 false,
                 false,
-                verbose,
+                options,
             )),
             (None, SchemaKind::Any | SchemaKind::Never) => {}
             (None, _)
                 if matches!(&schema.kind, SchemaKind::Typed(kinds) if kinds == &["array"])
                     && simple_item_type(items).is_some() => {}
-            (None, _) => children.push(schema_node(items, "items", false, false, verbose)),
+            (None, _) => children.push(schema_node(items, "items", false, false, options)),
         }
     }
     if let Some(contains) = &array.contains {
-        children.push(contains_node(contains, array, verbose));
+        children.push(contains_node(contains, array, options));
     }
     if let Some(unevaluated) = &array.unevaluated_items {
         let contains_note = array.contains.as_ref().map(|_| {
@@ -133,17 +133,17 @@ fn add_array_children(schema: &Schema, verbose: bool, children: &mut Vec<ViewNod
             SchemaNodeRole::UnevaluatedItems,
             array_evaluation_sources(schema),
             contains_note,
-            verbose,
+            options,
         ));
     }
 }
 
-fn add_supplemental_children(schema: &Schema, verbose: bool, children: &mut Vec<ViewNode>) {
+fn add_supplemental_children(schema: &Schema, options: &ViewOptions, children: &mut Vec<ViewNode>) {
     if let Some(content_schema) = &schema.annotations.content_schema {
         children.push(content_schema_node(
             content_schema,
             schema.annotations.content_media_type.is_some(),
-            verbose,
+            options,
         ));
     }
     if let Some(pattern) = &schema.string_constraints.pattern
@@ -159,19 +159,19 @@ fn add_supplemental_children(schema: &Schema, verbose: bool, children: &mut Vec<
     }
 }
 
-fn add_applicator_children(schema: &Schema, verbose: bool, children: &mut Vec<ViewNode>) {
+fn add_applicator_children(schema: &Schema, options: &ViewOptions, children: &mut Vec<ViewNode>) {
     let logical = &schema.logical_applicators;
     if !logical.all_of.is_empty() {
-        children.push(logical_section("allOf", &logical.all_of, verbose));
+        children.push(logical_section("allOf", &logical.all_of, options));
     }
     if !logical.any_of.is_empty() {
-        children.push(logical_section("anyOf", &logical.any_of, verbose));
+        children.push(logical_section("anyOf", &logical.any_of, options));
     }
     if !logical.one_of.is_empty() {
-        children.push(logical_section("oneOf", &logical.one_of, verbose));
+        children.push(logical_section("oneOf", &logical.one_of, options));
     }
     if let Some(not) = &logical.not {
-        children.push(not_node(not, verbose));
+        children.push(not_node(not, options));
     }
     let conditional = &schema.conditional_applicators;
     if let Some(condition) = &conditional.condition {
@@ -180,7 +180,7 @@ fn add_applicator_children(schema: &Schema, verbose: bool, children: &mut Vec<Vi
             "if",
             SchemaNodeRole::Condition,
             false,
-            verbose,
+            options,
         ));
     }
     let ignored_without_if = conditional.condition.is_none();
@@ -190,7 +190,7 @@ fn add_applicator_children(schema: &Schema, verbose: bool, children: &mut Vec<Vi
             "then",
             SchemaNodeRole::ThenBranch,
             ignored_without_if,
-            verbose,
+            options,
         ));
     }
     if let Some(else_branch) = &conditional.else_branch {
@@ -199,7 +199,7 @@ fn add_applicator_children(schema: &Schema, verbose: bool, children: &mut Vec<Vi
             "else",
             SchemaNodeRole::ElseBranch,
             ignored_without_if,
-            verbose,
+            options,
         ));
     }
 }

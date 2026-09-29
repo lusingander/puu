@@ -10,6 +10,7 @@ pub struct ColorTheme {
     pub connector: Style,
     pub constraint: Style,
     pub annotation: Style,
+    pub metadata: Style,
     pub marker: Style,
 }
 
@@ -21,6 +22,7 @@ impl Default for ColorTheme {
             connector: Style::new().blue(),
             constraint: Style::new().green(),
             annotation: Style::new().magenta(),
+            metadata: Style::new().magenta(),
             marker: Style::new().red(),
         }
     }
@@ -88,6 +90,7 @@ fn render_node(
         let style = match detail.kind {
             ViewDetailKind::Constraint => &theme.constraint,
             ViewDetailKind::Annotation => &theme.annotation,
+            ViewDetailKind::Metadata => &theme.metadata,
             ViewDetailKind::Marker => &theme.marker,
         };
         let text = escape_control_characters(&detail.text);
@@ -154,6 +157,7 @@ mod tests {
             connector: plain.clone(),
             constraint: plain.clone(),
             annotation: plain.clone(),
+            metadata: plain.clone(),
             marker: plain,
         };
 
