@@ -19,24 +19,16 @@ fn renders_selected_schema_and_global_definitions() {
         .stderr("");
 }
 
+#[rustfmt::skip]
 #[rstest]
 #[case("#", "root <type unspecified> [location: #]\n")]
-#[case(
-    "/properties/customer",
-    "customer -> User [location: #/properties/customer]\n"
-)]
+#[case("/properties/customer", "customer -> User [location: #/properties/customer]\n")]
 #[case("#/%24defs/a~1b~0c", "a/b~c integer [location: #/$defs/a~1b~0c]\n")]
-#[case(
-    "#/properties/caf%C3%A9",
-    "café string [location: #/properties/café]\n"
-)]
+#[case("#/properties/caf%C3%A9", "café string [location: #/properties/café]\n")]
 #[case("#/properties/flag", "flag any [location: #/properties/flag]\n")]
 #[case("#/items", "items boolean [location: #/items]\n")]
 #[case("#/prefixItems/0", "[0] null [location: #/prefixItems/0]\n")]
-#[case(
-    "#/properties/embedded/properties/value",
-    "value number [location: #/properties/embedded/properties/value]\n"
-)]
+#[case("#/properties/embedded/properties/value", "value number [location: #/properties/embedded/properties/value]\n")]
 fn accepts_supported_pointer_forms(#[case] pointer: &str, #[case] first_line: &str) {
     command()
         .args(["--pointer", pointer])
@@ -60,6 +52,7 @@ fn selects_legacy_definitions() {
         .stderr("");
 }
 
+#[rustfmt::skip]
 #[rstest]
 #[case("#/properties/customer/$ref", "does not identify a schema")]
 #[case("#/properties/missing", "schema pointer not found")]
