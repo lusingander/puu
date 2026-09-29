@@ -427,7 +427,7 @@ fn encode_uri_fragment(value: &str) -> String {
     encoded
 }
 
-pub(super) fn canonical_local_pointer(uri: &str) -> Option<String> {
+pub fn canonical_local_pointer(uri: &str) -> Option<String> {
     let fragment = uri.strip_prefix('#')?;
     let mut decoded_bytes = Vec::with_capacity(fragment.len());
     let mut bytes = fragment.bytes();
