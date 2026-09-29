@@ -1,0 +1,27 @@
+{
+  "$defs": {
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" }
+      }
+    },
+    "a/b~c": { "type": "integer" }
+  },
+  "properties": {
+    "customer": { "$ref": "#/$defs/User" },
+    "flag": true,
+    "café": { "type": "string" },
+    "embedded": {
+      "$id": "https://example.test/embedded",
+      "type": "object",
+      "properties": {
+        "value": { "type": "number" }
+      }
+    }
+  },
+  "prefixItems": [
+    { "type": "null" }
+  ],
+  "items": { "type": "boolean" }
+}

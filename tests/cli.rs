@@ -10,6 +10,8 @@ mod inventory;
 mod options;
 #[path = "cli/output.rs"]
 mod output;
+#[path = "cli/pointer.rs"]
+mod pointer;
 #[path = "cli/render.rs"]
 mod render;
 #[path = "cli/support.rs"]

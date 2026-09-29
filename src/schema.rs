@@ -6,7 +6,7 @@ mod resource;
 
 pub use index::SchemaIndex;
 pub use model::{
-    ArrayConstraints, Reference, ReferenceKind, ReferenceTarget, Schema, SchemaChildRole,
-    SchemaKind,
+    ArrayConstraints, ParsedDocument, Reference, ReferenceKind, ReferenceTarget, Schema,
+    SchemaChildRole, SchemaKind,
 };
 pub use parse::parse;

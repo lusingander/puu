@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use serde_json::{Map, Number, Value};
 
 use crate::{
@@ -6,8 +8,9 @@ use crate::{
         error::SchemaError,
         model::{
             Annotations, ArrayConstraints, ConditionalApplicators, LogicalApplicators,
-            NumberConstraints, ObjectConstraints, Reference, ReferenceKind, ReferenceTarget,
-            Schema, SchemaIdentity, SchemaKind, StringConstraints, ValueConstraints,
+            NumberConstraints, ObjectConstraints, ParsedDocument, Reference, ReferenceKind,
+            ReferenceTarget, Schema, SchemaIdentity, SchemaKind, StringConstraints,
+            ValueConstraints,
         },
         resource,
     },
@@ -52,11 +55,38 @@ impl ParseContext {
     }
 }
 
-pub fn parse(input: &str, forced_dialect: Option<Dialect>) -> Result<Schema, SchemaError> {
+pub fn parse(input: &str, forced_dialect: Option<Dialect>) -> Result<ParsedDocument, SchemaError> {
     let value: Value = serde_json::from_str(input).map_err(SchemaError::InvalidJson)?;
+    let value_locations = collect_value_locations(&value);
     let mut schema = parse_value(value, "#", ParseContext::root(forced_dialect))?;
     resource::prepare(&mut schema)?;
-    Ok(schema)
+    Ok(ParsedDocument {
+        root: schema,
+        value_locations,
+    })
+}
+
+fn collect_value_locations(value: &Value) -> HashSet<String> {
+    fn collect(value: &Value, location: String, locations: &mut HashSet<String>) {
+        locations.insert(location.clone());
+        match value {
+            Value::Object(entries) => {
+                for (name, child) in entries {
+                    collect(child, append_location(&location, name), locations);
+                }
+            }
+            Value::Array(values) => {
+                for (index, child) in values.iter().enumerate() {
+                    collect(child, format!("{location}/{index}"), locations);
+                }
+            }
+            Value::Null | Value::Bool(_) | Value::Number(_) | Value::String(_) => {}
+        }
+    }
+
+    let mut locations = HashSet::new();
+    collect(value, "#".to_owned(), &mut locations);
+    locations
 }
 
 fn parse_value(value: Value, location: &str, context: ParseContext) -> Result<Schema, SchemaError> {
@@ -933,4 +963,34 @@ fn is_positive_number(number: &Number) -> bool {
         .split_once(['e', 'E'])
         .map_or(text.as_str(), |(part, _)| part);
     !mantissa.starts_with('-') && mantissa.bytes().any(|digit| matches!(digit, b'1'..=b'9'))
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::schema::parse;
+
+    #[test]
+    fn records_every_json_value_location() {
+        let document = parse(
+            r#"{
+                "properties": {"a/b": {"type": "string"}},
+                "default": {"~items": [true]}
+            }"#,
+            None,
+        )
+        .expect("schema should parse");
+
+        for location in [
+            "#",
+            "#/properties",
+            "#/properties/a~1b",
+            "#/properties/a~1b/type",
+            "#/default/~0items/0",
+        ] {
+            assert!(
+                document.value_locations.contains(location),
+                "missing {location}"
+            );
+        }
+    }
 }

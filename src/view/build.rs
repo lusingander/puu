@@ -12,10 +12,17 @@ pub fn from_schema(
     document_schema: &Schema,
     root_schema: &Schema,
     root_name: &str,
+    show_location: bool,
     options: &ViewOptions,
 ) -> ViewDocument {
     let document_root = root_schema.location == "#";
-    let root = schema_node(root_schema, root_name, false, document_root, options);
+    let mut root = schema_node(root_schema, root_name, false, document_root, options);
+    if show_location {
+        root.details.push(ViewDetail::metadata(format!(
+            "location: {}",
+            root_schema.location
+        )));
+    }
     let mut roots = vec![root];
     let mut definitions = Vec::new();
     collect_definitions(document_schema, &mut definitions, options);

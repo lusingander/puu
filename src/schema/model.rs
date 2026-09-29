@@ -1,6 +1,13 @@
+use std::collections::HashSet;
+
 use serde_json::{Number, Value};
 
 use crate::dialect::Dialect;
+
+pub struct ParsedDocument {
+    pub root: Schema,
+    pub value_locations: HashSet<String>,
+}
 
 pub struct Schema {
     pub location: String,
