@@ -47,7 +47,10 @@ puu schema.json
 puu https://json.schemastore.org/package.json
 puu - < schema.json
 puu --draft 7 schema.json
+puu --pointer '#/$defs/User' schema.json
 ```
+
+`--pointer` renders a specific schema from the document. It accepts `#`, URI fragment JSON Pointers such as `#/$defs/User`, and JSON Pointers without the fragment marker such as `/$defs/User`. Quote values beginning with `#` in the shell.
 
 ### Options
 
@@ -60,11 +63,12 @@ Arguments:
   <SCHEMA>  JSON Schema file or URL to render, or '-' to read from standard input
 
 Options:
-  -d, --draft <DRAFT>  Override the JSON Schema draft [possible values: 2020-12, 2019-09, 7]
-  -v, --verbose        Show full annotations and uninterpreted values
-  -c, --color <COLOR>  Control colored tree output [default: auto] [possible values: auto, always, never]
-  -h, --help           Print help
-  -V, --version        Print version
+  -d, --draft <DRAFT>      Override the JSON Schema draft [possible values: 2020-12, 2019-09, 7]
+      --pointer <POINTER>  Render the schema at a JSON Pointer
+  -v, --verbose            Show full annotations and uninterpreted values
+  -c, --color <COLOR>      Control colored tree output [default: auto] [possible values: auto, always, never]
+  -h, --help               Print help
+  -V, --version            Print version
 ```
 
 ### Supported scope
