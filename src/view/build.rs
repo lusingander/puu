@@ -35,7 +35,11 @@ pub fn from_schema(
             children: definitions,
         });
     }
-    ViewDocument { roots }
+    let mut document = ViewDocument { roots };
+    if let Some(max_depth) = options.max_depth {
+        crate::view::depth::limit(&mut document, max_depth);
+    }
+    document
 }
 
 fn collect_definitions(schema: &Schema, output: &mut Vec<ViewNode>, options: &ViewOptions) {

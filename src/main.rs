@@ -33,6 +33,10 @@ struct Args {
     #[arg(short, long)]
     pointer: Option<String>,
 
+    /// Limit display tree depth, counting the root as depth 0
+    #[arg(short = 'L', long, value_name = "N")]
+    max_depth: Option<usize>,
+
     /// Show full annotations and uninterpreted values
     #[arg(short, long)]
     verbose: bool,
@@ -61,6 +65,7 @@ fn run() -> Result<(), String> {
     };
     let options = view::ViewOptions {
         verbose: args.verbose,
+        max_depth: args.max_depth,
         ..view::ViewOptions::default()
     };
     let document = view::from_schema(

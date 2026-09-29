@@ -1,0 +1,10 @@
+root object
+├─ customer object
+│  └─ … [children omitted]
+├─ status string
+└─ allOf
+   └─ … [children omitted]
+
+Definitions
+└─ User object
+   └─ … [children omitted]
