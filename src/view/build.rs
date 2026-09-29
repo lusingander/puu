@@ -8,10 +8,17 @@ use crate::{
     view::model::{SchemaNodeRole, ViewDetail, ViewDocument, ViewNode, ViewNodeRole, ViewOptions},
 };
 
-pub fn from_schema(schema: &Schema, options: &ViewOptions) -> ViewDocument {
-    let mut roots = vec![schema_node(schema, "root", false, true, options)];
+pub fn from_schema(
+    document_schema: &Schema,
+    root_schema: &Schema,
+    root_name: &str,
+    options: &ViewOptions,
+) -> ViewDocument {
+    let document_root = root_schema.location == "#";
+    let root = schema_node(root_schema, root_name, false, document_root, options);
+    let mut roots = vec![root];
     let mut definitions = Vec::new();
-    collect_definitions(schema, &mut definitions, options);
+    collect_definitions(document_schema, &mut definitions, options);
     if !definitions.is_empty() {
         roots.push(ViewNode {
             role: ViewNodeRole::Section,

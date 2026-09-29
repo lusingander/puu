@@ -830,10 +830,11 @@ fn select_dialect(
 }
 
 fn child_location(parent: &str, keyword: &str, name: &str) -> String {
-    format!(
-        "{parent}/{keyword}/{}",
-        name.replace('~', "~0").replace('/', "~1")
-    )
+    append_location(&format!("{parent}/{keyword}"), name)
+}
+
+fn append_location(parent: &str, token: &str) -> String {
+    format!("{parent}/{}", token.replace('~', "~0").replace('/', "~1"))
 }
 
 fn valid_type(kind: &str) -> bool {

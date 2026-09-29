@@ -393,7 +393,7 @@ fn render_pipeline(input: &str, draft: Option<Dialect>, verbose: bool) -> Result
         verbose,
         ..view::ViewOptions::default()
     };
-    let document = view::from_schema(&schema, &options);
+    let document = view::from_schema(&schema, &schema, "root", &options);
     let plain = console::Style::new();
     let theme = text::ColorTheme {
         key: plain.clone(),
@@ -415,7 +415,7 @@ fn exercise_pipeline(input: &str, draft: Option<Dialect>) {
                     verbose,
                     ..view::ViewOptions::default()
                 };
-                let document = view::from_schema(&schema, &options);
+                let document = view::from_schema(&schema, &schema, "root", &options);
                 let _ = text::render(&document, &text::ColorTheme::default());
             }
         }

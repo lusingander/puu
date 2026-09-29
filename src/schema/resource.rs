@@ -238,7 +238,7 @@ fn collect_registry_at(
         if result.is_ok() {
             let label = match role {
                 SchemaChildRole::Definition(name) => schema.definition_label(name, child),
-                SchemaChildRole::Other => &child.location,
+                _ => &child.location,
             };
             result = collect_registry(child, label, active_resources, registry);
         }

@@ -50,11 +50,13 @@ fn run() -> Result<(), String> {
     configure_color(args.color);
     let input = read_input(&args.schema)?;
     let schema = schema::parse(&input, args.draft).map_err(|error| error.to_string())?;
+    let index = schema::SchemaIndex::new(&schema);
+    let root = index.get("#").expect("the document root should be indexed");
     let options = view::ViewOptions {
         verbose: args.verbose,
         ..view::ViewOptions::default()
     };
-    let document = view::from_schema(&schema, &options);
+    let document = view::from_schema(&schema, root.schema, &root.display_name, &options);
     let tree = text::render(&document, &text::ColorTheme::default());
     write_output(&tree)
 }
