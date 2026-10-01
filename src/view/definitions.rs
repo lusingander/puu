@@ -2,10 +2,14 @@ use std::collections::{HashMap, HashSet, VecDeque};
 
 use crate::schema::{ReferenceTarget, Schema, SchemaChildRole};
 
-pub fn referenced_locations<'a>(document: &'a Schema, root: &'a Schema) -> HashSet<&'a str> {
+pub fn referenced_locations<'a>(
+    document: &'a Schema,
+    root: &'a Schema,
+    include_annotations: bool,
+) -> HashSet<&'a str> {
     let mut inventory = SchemaInventory::default();
     inventory.insert(document, None);
-    inventory.referenced_locations(root)
+    inventory.referenced_locations(root, include_annotations)
 }
 
 #[derive(Default)]
@@ -29,7 +33,11 @@ impl<'a> SchemaInventory<'a> {
         });
     }
 
-    fn referenced_locations(&self, root: &'a Schema) -> HashSet<&'a str> {
+    fn referenced_locations(
+        &self,
+        root: &'a Schema,
+        include_annotations: bool,
+    ) -> HashSet<&'a str> {
         let mut included = HashSet::new();
         let mut visited = HashSet::new();
         let mut pending = VecDeque::from([root]);
@@ -66,7 +74,9 @@ impl<'a> SchemaInventory<'a> {
             }
 
             schema.for_each_child(|role, child| {
-                if !matches!(role, SchemaChildRole::Definition(_)) {
+                if !matches!(role, SchemaChildRole::Definition(_))
+                    && (include_annotations || !matches!(role, SchemaChildRole::ContentSchema))
+                {
                     pending.push_back(child);
                 }
             });
@@ -103,8 +113,35 @@ mod tests {
         )
         .expect("schema should parse");
 
-        let locations = referenced_locations(&document.root, &document.root);
+        let locations = referenced_locations(&document.root, &document.root, true);
 
         assert_eq!(locations, HashSet::from(["#/$defs/A", "#/$defs/B"]));
+    }
+
+    #[test]
+    fn optionally_excludes_references_from_content_schemas() {
+        let document = schema::parse(
+            r##"{
+                "properties": {
+                    "visible": {"$ref": "#/$defs/Visible"}
+                },
+                "contentSchema": {"$ref": "#/$defs/AnnotationOnly"},
+                "$defs": {
+                    "Visible": {"type": "integer"},
+                    "AnnotationOnly": {"type": "string"}
+                }
+            }"##,
+            None,
+        )
+        .expect("schema should parse");
+
+        assert_eq!(
+            referenced_locations(&document.root, &document.root, true),
+            HashSet::from(["#/$defs/Visible", "#/$defs/AnnotationOnly"]),
+        );
+        assert_eq!(
+            referenced_locations(&document.root, &document.root, false),
+            HashSet::from(["#/$defs/Visible"]),
+        );
     }
 }

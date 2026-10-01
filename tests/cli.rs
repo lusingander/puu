@@ -1,3 +1,5 @@
+#[path = "cli/annotations.rs"]
+mod annotations;
 #[path = "cli/color.rs"]
 mod color;
 #[path = "cli/definitions.rs"]

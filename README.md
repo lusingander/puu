@@ -51,6 +51,7 @@ puu --pointer '#/$defs/User' schema.json
 puu --max-depth 2 schema.json
 puu --definitions referenced schema.json
 puu -r --definitions none schema.json
+puu -a schema.json
 ```
 
 ### Options
@@ -64,15 +65,16 @@ Arguments:
   <SCHEMA>  JSON Schema file or URL to render, or '-' to read from standard input
 
 Options:
-  -d, --draft <DRAFT>       Override the JSON Schema draft [possible values: 2020-12, 2019-09, 7]
-  -p, --pointer <POINTER>   Render the schema at a JSON Pointer
-  -L, --max-depth <N>       Limit display tree depth, counting the root as depth 0
-  -D, --definitions <MODE>  Control which definitions are displayed [default: all] [possible values: all, referenced, none]
-  -r, --expand-refs         Expand locally resolved schema references
-  -v, --verbose             Show full annotations and uninterpreted values
-  -c, --color <COLOR>       Control colored tree output [default: auto] [possible values: auto, always, never]
-  -h, --help                Print help
-  -V, --version             Print version
+  -d, --draft <DRAFT>        Override the JSON Schema draft [possible values: 2020-12, 2019-09, 7]
+  -p, --pointer <POINTER>    Render the schema at a JSON Pointer
+  -L, --max-depth <N>        Limit display tree depth, counting the root as depth 0
+  -D, --definitions <MODE>   Control which definitions are displayed [default: all] [possible values: all, referenced, none]
+  -r, --expand-refs          Expand locally resolved schema references
+  -a, --exclude-annotations  Hide schema annotations
+  -v, --verbose              Show full annotations and uninterpreted values
+  -c, --color <COLOR>        Control colored tree output [default: auto] [possible values: auto, always, never]
+  -h, --help                 Print help
+  -V, --version              Print version
 ```
 
 ### Pointer selection
@@ -92,6 +94,12 @@ Options:
 - `none` omits the section.
 
 References in the rendered schema remain visible in every mode. Definition selection follows schema references independently of `--max-depth`. With `--expand-refs`, references are also expanded inside the `Definitions` section.
+
+### Annotation display
+
+`-a` / `--exclude-annotations` hides recognized annotation keywords: `title`, `description`, `default`, `examples`, `deprecated`, `readOnly`, `writeOnly`, `format`, `$comment`, and the content-related keywords. A `contentSchema` and its subtree are omitted unless that schema is explicitly selected with `--pointer` or reached as a reference target.
+
+Constraints, schema identity, reference information, uninterpreted and ignored keyword markers, and metadata such as `$vocabulary` remain visible. With `--verbose --exclude-annotations`, annotations stay hidden while metadata and uninterpreted keyword values retain their verbose detail. Expanded references and definitions use the same annotation setting. In `--definitions referenced` mode, references found only inside an omitted `contentSchema` do not make a definition visible.
 
 ### Reference expansion
 

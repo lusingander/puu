@@ -51,6 +51,10 @@ struct Args {
     #[arg(short = 'r', long)]
     expand_refs: bool,
 
+    /// Hide schema annotations
+    #[arg(short = 'a', long)]
+    exclude_annotations: bool,
+
     /// Show full annotations and uninterpreted values
     #[arg(short, long)]
     verbose: bool,
@@ -82,7 +86,7 @@ fn run() -> Result<(), String> {
         max_depth: args.max_depth,
         definitions: args.definitions,
         expand_refs: args.expand_refs,
-        ..view::ViewOptions::default()
+        annotations: !args.exclude_annotations,
     };
     let document = view::from_schema(
         &parsed.root,

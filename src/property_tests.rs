@@ -392,11 +392,13 @@ fn render_pipeline(
     draft: Option<Dialect>,
     verbose: bool,
     expand_refs: bool,
+    annotations: bool,
 ) -> Result<String, String> {
     let parsed = schema::parse(input, draft).map_err(|error| error.to_string())?;
     let options = view::ViewOptions {
         verbose,
         expand_refs,
+        annotations,
         ..view::ViewOptions::default()
     };
     let index = schema::SchemaIndex::new(&parsed);
@@ -495,10 +497,23 @@ proptest! {
         value in renderable_schema(),
         verbose in any::<bool>(),
         expand_refs in any::<bool>(),
+        annotations in any::<bool>(),
     ) {
         let input = serde_json::to_string(&value).expect("generated schema should serialize");
-        let first = render_pipeline(&input, Some(Dialect::Draft202012), verbose, expand_refs);
-        let second = render_pipeline(&input, Some(Dialect::Draft202012), verbose, expand_refs);
+        let first = render_pipeline(
+            &input,
+            Some(Dialect::Draft202012),
+            verbose,
+            expand_refs,
+            annotations,
+        );
+        let second = render_pipeline(
+            &input,
+            Some(Dialect::Draft202012),
+            verbose,
+            expand_refs,
+            annotations,
+        );
 
         prop_assert_eq!(&first, &second);
         let output = first.expect("renderable schema should parse");

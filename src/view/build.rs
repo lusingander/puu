@@ -39,8 +39,11 @@ pub fn from_schema(
             collect_definitions(document_schema, None, &mut definitions, &mut context);
         }
         DefinitionsMode::Referenced => {
-            let referenced =
-                crate::view::definitions::referenced_locations(document_schema, root_schema);
+            let referenced = crate::view::definitions::referenced_locations(
+                document_schema,
+                root_schema,
+                options.annotations,
+            );
             collect_definitions(
                 document_schema,
                 Some(&referenced),
@@ -611,31 +614,35 @@ pub fn add_annotation_details(schema: &Schema, verbose: bool, details: &mut Vec<
             compact_text(media_type, if verbose { 160 } else { 60 })
         )));
     }
-    if verbose {
-        if let Some(comment) = &annotations.comment {
-            details.push(ViewDetail::annotation(format!(
-                "$comment: {}",
-                quoted_text(comment, 240)
-            )));
-        }
-        if !annotations.vocabulary.is_empty() {
-            let vocabulary = annotations
-                .vocabulary
-                .iter()
-                .map(|(uri, required)| {
-                    format!(
-                        "{uri} ({})",
-                        if *required { "required" } else { "optional" }
-                    )
-                })
-                .collect::<Vec<_>>()
-                .join(", ");
-            details.push(ViewDetail::metadata(format!(
-                "$vocabulary: {}",
-                compact_text(&vocabulary, 240)
-            )));
-        }
+    if verbose && let Some(comment) = &annotations.comment {
+        details.push(ViewDetail::annotation(format!(
+            "$comment: {}",
+            quoted_text(comment, 240)
+        )));
     }
+}
+
+pub fn add_metadata_details(schema: &Schema, verbose: bool, details: &mut Vec<ViewDetail>) {
+    if !verbose || schema.annotations.vocabulary.is_empty() {
+        return;
+    }
+
+    let vocabulary = schema
+        .annotations
+        .vocabulary
+        .iter()
+        .map(|(uri, required)| {
+            format!(
+                "{uri} ({})",
+                if *required { "required" } else { "optional" }
+            )
+        })
+        .collect::<Vec<_>>()
+        .join(", ");
+    details.push(ViewDetail::metadata(format!(
+        "$vocabulary: {}",
+        compact_text(&vocabulary, 240)
+    )));
 }
 
 fn add_boolean_annotation(

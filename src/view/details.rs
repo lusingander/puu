@@ -3,7 +3,10 @@ use serde_json::Value;
 use crate::{
     schema::{Reference, Schema, SchemaKind},
     view::{
-        build::{add_annotation_details, add_reference_details, compact_json, inline_enum},
+        build::{
+            add_annotation_details, add_metadata_details, add_reference_details, compact_json,
+            inline_enum,
+        },
         model::{ViewDetail, ViewOptions},
     },
 };
@@ -19,7 +22,10 @@ pub fn from_schema(
     add_object_constraints(schema, &mut details);
     add_array_constraints(schema, &mut details);
     add_string_constraints(schema, &mut details);
-    add_annotation_details(schema, options.verbose, &mut details);
+    if options.annotations {
+        add_annotation_details(schema, options.verbose, &mut details);
+    }
+    add_metadata_details(schema, options.verbose, &mut details);
     add_number_constraints(schema, &mut details);
     add_value_constraints(schema, primary_reference.is_some(), &mut details);
     add_keyword_markers(schema, options.verbose, &mut details);
