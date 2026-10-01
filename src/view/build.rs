@@ -39,8 +39,11 @@ pub fn from_schema(
             collect_definitions(document_schema, None, &mut definitions, &mut context);
         }
         DefinitionsMode::Referenced => {
-            let referenced =
-                crate::view::definitions::referenced_locations(document_schema, root_schema);
+            let referenced = crate::view::definitions::referenced_locations(
+                document_schema,
+                root_schema,
+                options.annotations,
+            );
             collect_definitions(
                 document_schema,
                 Some(&referenced),

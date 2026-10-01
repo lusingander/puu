@@ -60,3 +60,27 @@ fn excludes_annotations_from_expanded_references() {
         )
         .stderr("");
 }
+
+#[test]
+fn excludes_annotation_only_references_from_referenced_definitions() {
+    command()
+        .args(["-a", "-D", "referenced", "-"])
+        .write_stdin(
+            r##"{
+                "properties": {
+                    "visible": {"$ref": "#/$defs/Visible"}
+                },
+                "contentSchema": {"$ref": "#/$defs/AnnotationOnly"},
+                "$defs": {
+                    "Visible": {"type": "integer"},
+                    "AnnotationOnly": {"type": "string"}
+                }
+            }"##,
+        )
+        .assert()
+        .success()
+        .stdout(
+            "root <type unspecified>\n└─ visible -> Visible\n\nDefinitions\n└─ Visible integer\n",
+        )
+        .stderr("");
+}
