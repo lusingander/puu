@@ -87,7 +87,6 @@ fn run() -> Result<(), String> {
         definitions: args.definitions,
         expand_refs: args.expand_refs,
         annotations: !args.exclude_annotations,
-        ..view::ViewOptions::default()
     };
     let document = view::from_schema(
         &parsed.root,
