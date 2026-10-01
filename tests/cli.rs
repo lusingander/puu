@@ -16,6 +16,8 @@ mod options;
 mod output;
 #[path = "cli/pointer.rs"]
 mod pointer;
+#[path = "cli/references.rs"]
+mod references;
 #[path = "cli/render.rs"]
 mod render;
 #[path = "cli/support.rs"]

@@ -50,6 +50,7 @@ puu --draft 7 schema.json
 puu --pointer '#/$defs/User' schema.json
 puu --max-depth 2 schema.json
 puu --definitions referenced schema.json
+puu -r --definitions none schema.json
 ```
 
 ### Options
@@ -67,6 +68,7 @@ Options:
   -p, --pointer <POINTER>   Render the schema at a JSON Pointer
   -L, --max-depth <N>       Limit display tree depth, counting the root as depth 0
   -D, --definitions <MODE>  Control which definitions are displayed [default: all] [possible values: all, referenced, none]
+  -r, --expand-refs         Expand locally resolved schema references
   -v, --verbose             Show full annotations and uninterpreted values
   -c, --color <COLOR>       Control colored tree output [default: auto] [possible values: auto, always, never]
   -h, --help                Print help
@@ -89,7 +91,32 @@ Options:
 - `referenced` displays definitions transitively reachable through local references from the rendered schema. With `--pointer`, traversal starts at the selected schema.
 - `none` omits the section.
 
-References in the rendered schema remain visible in every mode. This option does not fetch external references or expand referenced schemas in place.
+References in the rendered schema remain visible in every mode. Definition selection follows schema references independently of `--max-depth`. With `--expand-refs`, references are also expanded inside the `Definitions` section.
+
+### Reference expansion
+
+`-r` / `--expand-refs` displays a locally resolved reference target as a child of the reference line. The reference line retains its own constraints and annotations; the child shows the target schema with an `[expanded from $ref]` marker.
+
+```text
+root object
+└─ customer -> User [required]
+   └─ User object [expanded from $ref]
+      ├─ name string [required]
+      └─ email string [format: email]
+```
+
+Reference chains are expanded transitively. Targets can be definitions, properties, logical branches, or other schemas in the document. Repeated targets are expanded separately in each branch. A reference back to a schema already on the current path is shown with `[expansion stopped: cycle]`.
+
+`--pointer` selects the starting schema; references can still reach targets elsewhere in the document. `--definitions` independently controls the separate section. For a single expanded tree, use:
+
+```console
+puu -r --definitions none --max-depth 4 schema.json
+puu -r --pointer '#/$defs/User' --definitions none schema.json
+```
+
+Expanded target nodes count toward the display depth. Children beyond `--max-depth` are omitted before construction. Reference expansion also has internal limits of display depth 64 and 10,000 constructed expansion nodes across the output, excluding omission markers. Reaching these limits displays `[expansion stopped: depth limit]` or `[expansion stopped: node limit]`.
+
+For locally resolved `$dynamicRef` and `$recursiveRef`, Puu expands the initial target recorded during schema loading. When dynamic resolution could change the target, `[initial target; dynamic scope not evaluated]` makes that limitation explicit. Dynamic scope is not evaluated. External and unresolved references keep their existing markers and are not expanded or fetched.
 
 ### Supported scope
 

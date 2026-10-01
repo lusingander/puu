@@ -3,23 +3,28 @@ use serde_json::Value;
 use crate::{
     schema::{
         ArrayConstraints, Reference, ReferenceKind, ReferenceTarget, Schema, SchemaChildRole,
-        SchemaKind,
+        SchemaIndex, SchemaKind,
     },
-    view::model::{
-        DefinitionsMode, SchemaNodeRole, ViewDetail, ViewDocument, ViewNode, ViewNodeRole,
-        ViewOptions,
+    view::{
+        context::BuildContext,
+        model::{
+            DefinitionsMode, SchemaNodeRole, ViewDetail, ViewDocument, ViewNode, ViewNodeRole,
+            ViewOptions,
+        },
     },
 };
 
 pub fn from_schema(
     document_schema: &Schema,
+    index: &SchemaIndex<'_>,
     root_schema: &Schema,
     root_name: &str,
     show_location: bool,
     options: &ViewOptions,
 ) -> ViewDocument {
+    let mut context = BuildContext::new(index, options);
     let document_root = root_schema.location == "#";
-    let mut root = schema_node(root_schema, root_name, false, document_root, options);
+    let mut root = schema_node(root_schema, root_name, false, document_root, &mut context);
     if show_location {
         root.details.push(ViewDetail::metadata(format!(
             "location: {}",
@@ -28,9 +33,10 @@ pub fn from_schema(
     }
     let mut roots = vec![root];
     let mut definitions = Vec::new();
+    context.depth = 1;
     match options.definitions {
         DefinitionsMode::All => {
-            collect_definitions(document_schema, None, &mut definitions, options);
+            collect_definitions(document_schema, None, &mut definitions, &mut context);
         }
         DefinitionsMode::Referenced => {
             let referenced =
@@ -39,7 +45,7 @@ pub fn from_schema(
                 document_schema,
                 Some(&referenced),
                 &mut definitions,
-                options,
+                &mut context,
             );
         }
         DefinitionsMode::None => {}
@@ -64,7 +70,7 @@ fn collect_definitions(
     schema: &Schema,
     included_locations: Option<&std::collections::HashSet<&str>>,
     output: &mut Vec<ViewNode>,
-    options: &ViewOptions,
+    context: &mut BuildContext<'_, '_>,
 ) {
     schema.for_each_child(|role, child| {
         if let SchemaChildRole::Definition(name) = role
@@ -74,21 +80,21 @@ fn collect_definitions(
             output.push(definition_node(
                 child,
                 schema.definition_label(name, child),
-                options,
+                context,
             ));
         }
-        collect_definitions(child, included_locations, output, options);
+        collect_definitions(child, included_locations, output, context);
     });
 }
 
-fn definition_node(schema: &Schema, name: &str, options: &ViewOptions) -> ViewNode {
+fn definition_node(schema: &Schema, name: &str, context: &mut BuildContext<'_, '_>) -> ViewNode {
     schema_node_with_role(
         schema,
         name,
         false,
         false,
         SchemaNodeRole::Definition,
-        options,
+        context,
     )
 }
 
@@ -97,7 +103,7 @@ pub fn schema_node(
     name: &str,
     required: bool,
     root: bool,
-    options: &ViewOptions,
+    context: &mut BuildContext<'_, '_>,
 ) -> ViewNode {
     schema_node_with_role(
         schema,
@@ -105,41 +111,52 @@ pub fn schema_node(
         required,
         root,
         SchemaNodeRole::Instance,
-        options,
+        context,
     )
 }
 
-pub fn pattern_property_node(schema: &Schema, pattern: &str, options: &ViewOptions) -> ViewNode {
+pub fn pattern_property_node(
+    schema: &Schema,
+    pattern: &str,
+    context: &mut BuildContext<'_, '_>,
+) -> ViewNode {
     schema_node_with_role(
         schema,
         &format!("<properties matching {pattern:?}>"),
         false,
         false,
         SchemaNodeRole::PatternProperty,
-        options,
+        context,
     )
 }
 
-pub fn property_names_node(schema: &Schema, options: &ViewOptions) -> ViewNode {
+pub fn property_names_node(schema: &Schema, context: &mut BuildContext<'_, '_>) -> ViewNode {
     schema_node_with_role(
         schema,
         "<property names>",
         false,
         false,
         SchemaNodeRole::PropertyName,
-        options,
+        context,
     )
 }
 
-pub fn contains_node(schema: &Schema, array: &ArrayConstraints, options: &ViewOptions) -> ViewNode {
+pub fn contains_node(
+    schema: &Schema,
+    array: &ArrayConstraints,
+    context: &mut BuildContext<'_, '_>,
+) -> ViewNode {
     let mut node = schema_node_with_role(
         schema,
         "contains",
         false,
         false,
         SchemaNodeRole::Contains,
-        options,
+        context,
     );
+    if matches!(node.role, ViewNodeRole::Omission) {
+        return node;
+    }
     let count = match (&array.min_contains, &array.max_contains) {
         (Some(min), Some(max)) => format!("{min}..{max} matches"),
         (Some(min), None) => format!(">= {min} matches"),
@@ -153,7 +170,7 @@ pub fn contains_node(schema: &Schema, array: &ArrayConstraints, options: &ViewOp
 pub fn content_schema_node(
     schema: &Schema,
     has_media_type: bool,
-    options: &ViewOptions,
+    context: &mut BuildContext<'_, '_>,
 ) -> ViewNode {
     let mut node = schema_node_with_role(
         schema,
@@ -161,8 +178,11 @@ pub fn content_schema_node(
         false,
         false,
         SchemaNodeRole::ContentSchema,
-        options,
+        context,
     );
+    if matches!(node.role, ViewNodeRole::Omission) {
+        return node;
+    }
     if !has_media_type {
         node.details
             .insert(0, ViewDetail::marker("ignored without contentMediaType"));
@@ -176,9 +196,12 @@ pub fn unevaluated_node(
     role: SchemaNodeRole,
     evaluation_sources: Vec<&str>,
     contains_note: Option<&str>,
-    options: &ViewOptions,
+    context: &mut BuildContext<'_, '_>,
 ) -> ViewNode {
-    let mut node = schema_node_with_role(schema, name, false, false, role, options);
+    let mut node = schema_node_with_role(schema, name, false, false, role, context);
+    if matches!(node.role, ViewNodeRole::Omission) {
+        return node;
+    }
     node.value = match schema.kind {
         SchemaKind::Any => "allowed".to_owned(),
         SchemaKind::Never => "forbidden".to_owned(),
@@ -198,56 +221,86 @@ pub fn unevaluated_node(
     node
 }
 
-fn reference_node(reference: &Reference) -> ViewNode {
+fn reference_node(reference: &Reference, context: &mut BuildContext<'_, '_>) -> ViewNode {
+    if let Some(omission) = context.begin_node() {
+        return omission;
+    }
     let mut details = Vec::new();
     add_reference_details(reference, &mut details);
+    let children = context.at_next_depth(|context| {
+        crate::view::references::expand(reference, &mut details, context)
+            .into_iter()
+            .collect()
+    });
     ViewNode {
         role: ViewNodeRole::Schema(SchemaNodeRole::ReferenceApplicator),
         key: Some(reference.kind.keyword().to_owned()),
         value: reference_value(reference),
         details,
-        children: Vec::new(),
+        children,
     }
 }
 
-pub fn logical_section(keyword: &str, branches: &[Schema], options: &ViewOptions) -> ViewNode {
+pub fn logical_section(
+    keyword: &str,
+    branches: &[Schema],
+    context: &mut BuildContext<'_, '_>,
+) -> ViewNode {
+    if let Some(omission) = context.begin_node() {
+        return omission;
+    }
     ViewNode {
         role: ViewNodeRole::Section,
         key: None,
         value: keyword.to_owned(),
         details: Vec::new(),
-        children: branches
-            .iter()
-            .enumerate()
-            .map(|(index, branch)| {
-                schema_node_with_role(
-                    branch,
-                    &format!("[{index}]"),
-                    false,
-                    false,
-                    SchemaNodeRole::LogicalBranch,
-                    options,
-                )
-            })
-            .collect(),
+        children: context.at_next_depth(|context| {
+            branches
+                .iter()
+                .enumerate()
+                .map(|(index, branch)| {
+                    schema_node_with_role(
+                        branch,
+                        &format!("[{index}]"),
+                        false,
+                        false,
+                        SchemaNodeRole::LogicalBranch,
+                        context,
+                    )
+                })
+                .collect()
+        }),
     }
 }
 
-pub fn not_node(schema: &Schema, options: &ViewOptions) -> ViewNode {
+pub fn constraint_node(name: &str, value: String, context: &mut BuildContext<'_, '_>) -> ViewNode {
+    if let Some(omission) = context.begin_node() {
+        return omission;
+    }
+    ViewNode {
+        role: ViewNodeRole::Constraint,
+        key: Some(name.to_owned()),
+        value,
+        details: Vec::new(),
+        children: Vec::new(),
+    }
+}
+
+pub fn not_node(schema: &Schema, context: &mut BuildContext<'_, '_>) -> ViewNode {
     schema_node_with_role(
         schema,
         "not",
         false,
         false,
         SchemaNodeRole::LogicalBranch,
-        options,
+        context,
     )
 }
 
 pub fn dependent_schema_node(
     schema: &Schema,
     property_name: &str,
-    options: &ViewOptions,
+    context: &mut BuildContext<'_, '_>,
 ) -> ViewNode {
     schema_node_with_role(
         schema,
@@ -255,7 +308,7 @@ pub fn dependent_schema_node(
         false,
         false,
         SchemaNodeRole::DependentSchema,
-        options,
+        context,
     )
 }
 
@@ -264,9 +317,12 @@ pub fn conditional_node(
     keyword: &str,
     role: SchemaNodeRole,
     ignored_without_if: bool,
-    options: &ViewOptions,
+    context: &mut BuildContext<'_, '_>,
 ) -> ViewNode {
-    let mut node = schema_node_with_role(schema, keyword, false, false, role, options);
+    let mut node = schema_node_with_role(schema, keyword, false, false, role, context);
+    if matches!(node.role, ViewNodeRole::Omission) {
+        return node;
+    }
     if ignored_without_if {
         node.details
             .insert(0, ViewDetail::marker("ignored without if"));
@@ -274,22 +330,39 @@ pub fn conditional_node(
     node
 }
 
-fn schema_node_with_role(
+pub fn schema_node_with_role(
     schema: &Schema,
     name: &str,
     required: bool,
     root: bool,
     role: SchemaNodeRole,
-    options: &ViewOptions,
+    context: &mut BuildContext<'_, '_>,
 ) -> ViewNode {
+    if let Some(omission) = context.begin_node() {
+        return omission;
+    }
     let key = match (&schema.kind, root) {
         (SchemaKind::Any | SchemaKind::Never, true) => None,
         _ => Some(name.to_owned()),
     };
     let primary_reference = primary_reference(schema);
     let value = schema_value(schema, primary_reference);
-    let details = crate::view::details::from_schema(schema, required, primary_reference, options);
-    let children = crate::view::children::from_schema(schema, options);
+    let mut details =
+        crate::view::details::from_schema(schema, required, primary_reference, context.options);
+    let entered = context.active_schemas.insert(schema.location.clone());
+    let children = context.at_next_depth(|context| {
+        let mut children = Vec::new();
+        if let Some(reference) = primary_reference
+            && let Some(target) = crate::view::references::expand(reference, &mut details, context)
+        {
+            children.push(target);
+        }
+        children.extend(crate::view::children::from_schema(schema, context));
+        children
+    });
+    if entered {
+        context.active_schemas.remove(&schema.location);
+    }
 
     ViewNode {
         role: ViewNodeRole::Schema(role),
@@ -348,8 +421,15 @@ fn primary_reference(schema: &Schema) -> Option<&Reference> {
     schema.references().next()
 }
 
-pub fn additional_reference_nodes(schema: &Schema) -> Vec<ViewNode> {
-    schema.references().skip(1).map(reference_node).collect()
+pub fn additional_reference_nodes(
+    schema: &Schema,
+    context: &mut BuildContext<'_, '_>,
+) -> Vec<ViewNode> {
+    schema
+        .references()
+        .skip(1)
+        .map(|reference| reference_node(reference, context))
+        .collect()
 }
 
 fn reference_value(reference: &Reference) -> String {

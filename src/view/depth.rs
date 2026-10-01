@@ -19,12 +19,16 @@ fn limit_node(node: &mut ViewNode, depth: usize, max_depth: usize) {
     }
 }
 
-fn omission_node() -> ViewNode {
+pub fn omission_node() -> ViewNode {
+    omission_with_reason("children omitted")
+}
+
+pub fn omission_with_reason(reason: &str) -> ViewNode {
     ViewNode {
         role: ViewNodeRole::Omission,
         key: None,
         value: "…".to_owned(),
-        details: vec![ViewDetail::marker("children omitted")],
+        details: vec![ViewDetail::marker(reason)],
         children: Vec::new(),
     }
 }

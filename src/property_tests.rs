@@ -387,13 +387,20 @@ fn arbitrary_draft() -> impl Strategy<Value = Option<Dialect>> {
     ]
 }
 
-fn render_pipeline(input: &str, draft: Option<Dialect>, verbose: bool) -> Result<String, String> {
+fn render_pipeline(
+    input: &str,
+    draft: Option<Dialect>,
+    verbose: bool,
+    expand_refs: bool,
+) -> Result<String, String> {
     let parsed = schema::parse(input, draft).map_err(|error| error.to_string())?;
     let options = view::ViewOptions {
         verbose,
+        expand_refs,
         ..view::ViewOptions::default()
     };
-    let document = view::from_schema(&parsed.root, &parsed.root, "root", false, &options);
+    let index = schema::SchemaIndex::new(&parsed);
+    let document = view::from_schema(&parsed.root, &index, &parsed.root, "root", false, &options);
     let plain = console::Style::new();
     let theme = text::ColorTheme {
         key: plain.clone(),
@@ -423,20 +430,30 @@ fn respects_max_depth(node: &view::ViewNode, depth: usize, max_depth: usize) -> 
 fn exercise_pipeline(input: &str, draft: Option<Dialect>) {
     match schema::parse(input, draft) {
         Ok(parsed) => {
+            let index = schema::SchemaIndex::new(&parsed);
             for definitions in [
                 view::DefinitionsMode::All,
                 view::DefinitionsMode::Referenced,
                 view::DefinitionsMode::None,
             ] {
                 for verbose in [false, true] {
-                    let options = view::ViewOptions {
-                        verbose,
-                        definitions,
-                        ..view::ViewOptions::default()
-                    };
-                    let document =
-                        view::from_schema(&parsed.root, &parsed.root, "root", false, &options);
-                    let _ = text::render(&document, &text::ColorTheme::default());
+                    for expand_refs in [false, true] {
+                        let options = view::ViewOptions {
+                            verbose,
+                            definitions,
+                            expand_refs,
+                            ..view::ViewOptions::default()
+                        };
+                        let document = view::from_schema(
+                            &parsed.root,
+                            &index,
+                            &parsed.root,
+                            "root",
+                            false,
+                            &options,
+                        );
+                        let _ = text::render(&document, &text::ColorTheme::default());
+                    }
                 }
             }
         }
@@ -477,10 +494,11 @@ proptest! {
     fn rendered_schema_is_deterministic_and_has_no_control_characters(
         value in renderable_schema(),
         verbose in any::<bool>(),
+        expand_refs in any::<bool>(),
     ) {
         let input = serde_json::to_string(&value).expect("generated schema should serialize");
-        let first = render_pipeline(&input, Some(Dialect::Draft202012), verbose);
-        let second = render_pipeline(&input, Some(Dialect::Draft202012), verbose);
+        let first = render_pipeline(&input, Some(Dialect::Draft202012), verbose, expand_refs);
+        let second = render_pipeline(&input, Some(Dialect::Draft202012), verbose, expand_refs);
 
         prop_assert_eq!(&first, &second);
         let output = first.expect("renderable schema should parse");
@@ -496,15 +514,18 @@ proptest! {
     fn maximum_depth_bounds_every_rendered_tree(
         value in renderable_schema(),
         max_depth in 0_usize..6,
+        expand_refs in any::<bool>(),
     ) {
         let input = serde_json::to_string(&value).expect("generated schema should serialize");
         let parsed = schema::parse(&input, Some(Dialect::Draft202012))
             .expect("renderable schema should parse");
         let options = view::ViewOptions {
             max_depth: Some(max_depth),
+            expand_refs,
             ..view::ViewOptions::default()
         };
-        let document = view::from_schema(&parsed.root, &parsed.root, "root", false, &options);
+        let index = schema::SchemaIndex::new(&parsed);
+        let document = view::from_schema(&parsed.root, &index, &parsed.root, "root", false, &options);
 
         prop_assert!(
             document
