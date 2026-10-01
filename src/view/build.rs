@@ -349,7 +349,7 @@ pub(super) fn schema_node_with_role(
     let value = schema_value(schema, primary_reference);
     let mut details =
         crate::view::details::from_schema(schema, required, primary_reference, context.options);
-    context.active_schemas.insert(schema.location.clone());
+    let entered = context.active_schemas.insert(schema.location.clone());
     let children = context.at_next_depth(|context| {
         let mut children = Vec::new();
         if let Some(reference) = primary_reference
@@ -360,7 +360,9 @@ pub(super) fn schema_node_with_role(
         children.extend(crate::view::children::from_schema(schema, context));
         children
     });
-    context.active_schemas.remove(&schema.location);
+    if entered {
+        context.active_schemas.remove(&schema.location);
+    }
 
     ViewNode {
         role: ViewNodeRole::Schema(role),

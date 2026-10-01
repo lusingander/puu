@@ -208,6 +208,25 @@ root <type unspecified>
     }
 
     #[test]
+    fn preserves_the_selected_schema_on_the_path_when_expanding_its_ancestor() {
+        let output = render(
+            r##"{
+                "type": "object",
+                "properties": {"value": {"$ref": "#", "$dynamicRef": "#/properties/value"}}
+            }"##,
+            Some("#/properties/value"),
+            None,
+        );
+        assert_eq!(output, "\
+value -> root [recursive] [location: #/properties/value]
+├─ root object [expanded from $ref]
+│  └─ value -> root [recursive] [expansion stopped: cycle]
+│     └─ $dynamicRef -> #/properties/value [recursive] [dynamic ref: static start] [expansion stopped: cycle]
+└─ $dynamicRef -> #/properties/value [recursive] [dynamic ref: static start] [expansion stopped: cycle]
+");
+    }
+
+    #[test]
     fn marks_dynamic_start_points_and_expands_additional_references() {
         let output = render(
             r##"{
