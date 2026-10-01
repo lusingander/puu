@@ -19,7 +19,7 @@ fn limit_node(node: &mut ViewNode, depth: usize, max_depth: usize) {
     }
 }
 
-fn omission_node() -> ViewNode {
+pub(super) fn omission_node() -> ViewNode {
     ViewNode {
         role: ViewNodeRole::Omission,
         key: None,
