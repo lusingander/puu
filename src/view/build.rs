@@ -5,7 +5,10 @@ use crate::{
         ArrayConstraints, Reference, ReferenceKind, ReferenceTarget, Schema, SchemaChildRole,
         SchemaKind,
     },
-    view::model::{SchemaNodeRole, ViewDetail, ViewDocument, ViewNode, ViewNodeRole, ViewOptions},
+    view::model::{
+        DefinitionsMode, SchemaNodeRole, ViewDetail, ViewDocument, ViewNode, ViewNodeRole,
+        ViewOptions,
+    },
 };
 
 pub fn from_schema(
@@ -25,7 +28,22 @@ pub fn from_schema(
     }
     let mut roots = vec![root];
     let mut definitions = Vec::new();
-    collect_definitions(document_schema, &mut definitions, options);
+    match options.definitions {
+        DefinitionsMode::All => {
+            collect_definitions(document_schema, None, &mut definitions, options);
+        }
+        DefinitionsMode::Referenced => {
+            let referenced =
+                crate::view::definitions::referenced_locations(document_schema, root_schema);
+            collect_definitions(
+                document_schema,
+                Some(&referenced),
+                &mut definitions,
+                options,
+            );
+        }
+        DefinitionsMode::None => {}
+    }
     if !definitions.is_empty() {
         roots.push(ViewNode {
             role: ViewNodeRole::Section,
@@ -42,16 +60,24 @@ pub fn from_schema(
     document
 }
 
-fn collect_definitions(schema: &Schema, output: &mut Vec<ViewNode>, options: &ViewOptions) {
+fn collect_definitions(
+    schema: &Schema,
+    included_locations: Option<&std::collections::HashSet<&str>>,
+    output: &mut Vec<ViewNode>,
+    options: &ViewOptions,
+) {
     schema.for_each_child(|role, child| {
-        if let SchemaChildRole::Definition(name) = role {
+        if let SchemaChildRole::Definition(name) = role
+            && included_locations
+                .is_none_or(|locations| locations.contains(child.location.as_str()))
+        {
             output.push(definition_node(
                 child,
                 schema.definition_label(name, child),
                 options,
             ));
         }
-        collect_definitions(child, output, options);
+        collect_definitions(child, included_locations, output, options);
     });
 }
 

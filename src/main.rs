@@ -37,6 +37,16 @@ struct Args {
     #[arg(short = 'L', long, value_name = "N")]
     max_depth: Option<usize>,
 
+    /// Control which definitions are displayed
+    #[arg(
+        short = 'D',
+        long,
+        value_enum,
+        default_value = "all",
+        value_name = "MODE"
+    )]
+    definitions: view::DefinitionsMode,
+
     /// Show full annotations and uninterpreted values
     #[arg(short, long)]
     verbose: bool,
@@ -66,6 +76,7 @@ fn run() -> Result<(), String> {
     let options = view::ViewOptions {
         verbose: args.verbose,
         max_depth: args.max_depth,
+        definitions: args.definitions,
         ..view::ViewOptions::default()
     };
     let document = view::from_schema(
