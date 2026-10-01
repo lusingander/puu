@@ -47,6 +47,10 @@ struct Args {
     )]
     definitions: view::DefinitionsMode,
 
+    /// Expand locally resolved schema references
+    #[arg(short = 'r', long)]
+    expand_refs: bool,
+
     /// Show full annotations and uninterpreted values
     #[arg(short, long)]
     verbose: bool,
@@ -77,6 +81,7 @@ fn run() -> Result<(), String> {
         verbose: args.verbose,
         max_depth: args.max_depth,
         definitions: args.definitions,
+        expand_refs: args.expand_refs,
         ..view::ViewOptions::default()
     };
     let document = view::from_schema(
