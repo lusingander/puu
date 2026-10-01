@@ -150,7 +150,9 @@ fn add_supplemental_children(
     context: &mut BuildContext<'_, '_>,
     children: &mut Vec<ViewNode>,
 ) {
-    if let Some(content_schema) = &schema.annotations.content_schema {
+    if context.options.annotations
+        && let Some(content_schema) = &schema.annotations.content_schema
+    {
         children.push(content_schema_node(
             content_schema,
             schema.annotations.content_media_type.is_some(),
