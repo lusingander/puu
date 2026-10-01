@@ -330,7 +330,7 @@ pub fn conditional_node(
     node
 }
 
-pub(super) fn schema_node_with_role(
+pub fn schema_node_with_role(
     schema: &Schema,
     name: &str,
     required: bool,

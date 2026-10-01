@@ -8,7 +8,7 @@ use crate::{
 const MAX_EXPANSION_DEPTH: usize = 64;
 const MAX_EXPANDED_NODES: usize = 10_000;
 
-pub(super) struct BuildContext<'schema, 'options> {
+pub struct BuildContext<'schema, 'options> {
     pub index: &'options SchemaIndex<'schema>,
     pub options: &'options ViewOptions,
     pub depth: usize,

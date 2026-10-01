@@ -8,7 +8,7 @@ use crate::{
     },
 };
 
-pub(super) fn expand(
+pub fn expand(
     reference: &Reference,
     details: &mut Vec<ViewDetail>,
     context: &mut BuildContext<'_, '_>,
