@@ -55,6 +55,7 @@ pub enum SchemaNodeRole {
     UnevaluatedProperties,
     UnevaluatedItems,
     ReferenceApplicator,
+    ExpandedReference,
     LogicalBranch,
     DependentSchema,
     Condition,

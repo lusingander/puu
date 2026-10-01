@@ -393,7 +393,8 @@ fn render_pipeline(input: &str, draft: Option<Dialect>, verbose: bool) -> Result
         verbose,
         ..view::ViewOptions::default()
     };
-    let document = view::from_schema(&parsed.root, &parsed.root, "root", false, &options);
+    let index = schema::SchemaIndex::new(&parsed);
+    let document = view::from_schema(&parsed.root, &index, &parsed.root, "root", false, &options);
     let plain = console::Style::new();
     let theme = text::ColorTheme {
         key: plain.clone(),
@@ -434,8 +435,15 @@ fn exercise_pipeline(input: &str, draft: Option<Dialect>) {
                         definitions,
                         ..view::ViewOptions::default()
                     };
-                    let document =
-                        view::from_schema(&parsed.root, &parsed.root, "root", false, &options);
+                    let index = schema::SchemaIndex::new(&parsed);
+                    let document = view::from_schema(
+                        &parsed.root,
+                        &index,
+                        &parsed.root,
+                        "root",
+                        false,
+                        &options,
+                    );
                     let _ = text::render(&document, &text::ColorTheme::default());
                 }
             }
@@ -504,7 +512,8 @@ proptest! {
             max_depth: Some(max_depth),
             ..view::ViewOptions::default()
         };
-        let document = view::from_schema(&parsed.root, &parsed.root, "root", false, &options);
+        let index = schema::SchemaIndex::new(&parsed);
+        let document = view::from_schema(&parsed.root, &index, &parsed.root, "root", false, &options);
 
         prop_assert!(
             document

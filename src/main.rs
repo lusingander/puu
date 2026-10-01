@@ -81,6 +81,7 @@ fn run() -> Result<(), String> {
     };
     let document = view::from_schema(
         &parsed.root,
+        &index,
         root.schema,
         &root.display_name,
         args.pointer.is_some(),

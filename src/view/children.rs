@@ -2,17 +2,18 @@ use crate::{
     schema::{Schema, SchemaKind},
     view::{
         build::{
-            BuildContext, additional_reference_nodes, array_evaluation_sources, conditional_node,
-            contains_node, content_schema_node, dependent_schema_node, logical_section, not_node,
-            object_evaluation_sources, pattern_property_node, property_names_node, schema_node,
-            simple_item_type, unevaluated_node,
+            additional_reference_nodes, array_evaluation_sources, conditional_node,
+            constraint_node, contains_node, content_schema_node, dependent_schema_node,
+            logical_section, not_node, object_evaluation_sources, pattern_property_node,
+            property_names_node, schema_node, simple_item_type, unevaluated_node,
         },
-        model::{SchemaNodeRole, ViewNode, ViewNodeRole},
+        context::BuildContext,
+        model::{SchemaNodeRole, ViewNode},
     },
 };
 
-pub fn from_schema(schema: &Schema, context: &mut BuildContext<'_>) -> Vec<ViewNode> {
-    let mut children = additional_reference_nodes(schema);
+pub fn from_schema(schema: &Schema, context: &mut BuildContext<'_, '_>) -> Vec<ViewNode> {
+    let mut children = additional_reference_nodes(schema, context);
     add_object_children(schema, context, &mut children);
     add_array_children(schema, context, &mut children);
     add_supplemental_children(schema, context, &mut children);
@@ -22,7 +23,7 @@ pub fn from_schema(schema: &Schema, context: &mut BuildContext<'_>) -> Vec<ViewN
 
 fn add_object_children(
     schema: &Schema,
-    context: &mut BuildContext<'_>,
+    context: &mut BuildContext<'_, '_>,
     children: &mut Vec<ViewNode>,
 ) {
     children.extend(
@@ -85,7 +86,7 @@ fn add_object_children(
 
 fn add_array_children(
     schema: &Schema,
-    context: &mut BuildContext<'_>,
+    context: &mut BuildContext<'_, '_>,
     children: &mut Vec<ViewNode>,
 ) {
     let array = &schema.array_constraints;
@@ -103,13 +104,11 @@ fn add_array_children(
     if let Some(items) = &array.items {
         match (&array.prefix_items, &items.kind) {
             (Some(_), SchemaKind::Any) => {}
-            (Some(_), SchemaKind::Never) => children.push(ViewNode {
-                role: ViewNodeRole::Constraint,
-                key: Some("additional items".to_owned()),
-                value: "forbidden".to_owned(),
-                details: Vec::new(),
-                children: Vec::new(),
-            }),
+            (Some(_), SchemaKind::Never) => children.push(constraint_node(
+                "additional items",
+                "forbidden".to_owned(),
+                context,
+            )),
             (Some(prefix_items), _) => children.push(schema_node(
                 items,
                 &format!("[{}..]", prefix_items.len()),
@@ -148,7 +147,7 @@ fn add_array_children(
 
 fn add_supplemental_children(
     schema: &Schema,
-    context: &mut BuildContext<'_>,
+    context: &mut BuildContext<'_, '_>,
     children: &mut Vec<ViewNode>,
 ) {
     if let Some(content_schema) = &schema.annotations.content_schema {
@@ -161,19 +160,13 @@ fn add_supplemental_children(
     if let Some(pattern) = &schema.string_constraints.pattern
         && pattern.chars().count() > 48
     {
-        children.push(ViewNode {
-            role: ViewNodeRole::Constraint,
-            key: Some("pattern".to_owned()),
-            value: format!("{pattern:?}"),
-            details: Vec::new(),
-            children: Vec::new(),
-        });
+        children.push(constraint_node("pattern", format!("{pattern:?}"), context));
     }
 }
 
 fn add_applicator_children(
     schema: &Schema,
-    context: &mut BuildContext<'_>,
+    context: &mut BuildContext<'_, '_>,
     children: &mut Vec<ViewNode>,
 ) {
     let logical = &schema.logical_applicators;

@@ -63,6 +63,7 @@ fn render_node(
             | SchemaNodeRole::UnevaluatedProperties
             | SchemaNodeRole::UnevaluatedItems
             | SchemaNodeRole::ReferenceApplicator
+            | SchemaNodeRole::ExpandedReference
             | SchemaNodeRole::LogicalBranch
             | SchemaNodeRole::DependentSchema
             | SchemaNodeRole::Condition
