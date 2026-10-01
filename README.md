@@ -49,6 +49,7 @@ puu - < schema.json
 puu --draft 7 schema.json
 puu --pointer '#/$defs/User' schema.json
 puu --max-depth 2 schema.json
+puu --definitions referenced schema.json
 ```
 
 ### Options
@@ -62,13 +63,14 @@ Arguments:
   <SCHEMA>  JSON Schema file or URL to render, or '-' to read from standard input
 
 Options:
-  -d, --draft <DRAFT>      Override the JSON Schema draft [possible values: 2020-12, 2019-09, 7]
-  -p, --pointer <POINTER>  Render the schema at a JSON Pointer
-  -L, --max-depth <N>      Limit display tree depth, counting the root as depth 0
-  -v, --verbose            Show full annotations and uninterpreted values
-  -c, --color <COLOR>      Control colored tree output [default: auto] [possible values: auto, always, never]
-  -h, --help               Print help
-  -V, --version            Print version
+  -d, --draft <DRAFT>       Override the JSON Schema draft [possible values: 2020-12, 2019-09, 7]
+  -p, --pointer <POINTER>   Render the schema at a JSON Pointer
+  -L, --max-depth <N>       Limit display tree depth, counting the root as depth 0
+  -D, --definitions <MODE>  Control which definitions are displayed [default: all] [possible values: all, referenced, none]
+  -v, --verbose             Show full annotations and uninterpreted values
+  -c, --color <COLOR>       Control colored tree output [default: auto] [possible values: auto, always, never]
+  -h, --help                Print help
+  -V, --version             Print version
 ```
 
 ### Pointer selection
@@ -78,6 +80,16 @@ Options:
 ### Maximum display depth
 
 `-L N` / `--max-depth N` limits the indentation depth of the rendered tree, counting each root as depth 0. When a node at the limit has children, Puu displays `… [children omitted]` below it instead of silently dropping the children.
+
+### Definition display
+
+`-D MODE` / `--definitions MODE` controls the separate `Definitions` section:
+
+- `all` displays every definition in the document and is the default.
+- `referenced` displays definitions transitively reachable through local references from the rendered schema. With `--pointer`, traversal starts at the selected schema.
+- `none` omits the section.
+
+References in the rendered schema remain visible in every mode. This option does not fetch external references or expand referenced schemas in place.
 
 ### Supported scope
 
