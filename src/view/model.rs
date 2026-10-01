@@ -1,5 +1,4 @@
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-#[allow(dead_code)]
+#[derive(clap::ValueEnum, Clone, Copy, Debug, Eq, PartialEq)]
 pub enum DefinitionsMode {
     All,
     Referenced,

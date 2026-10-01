@@ -423,14 +423,21 @@ fn respects_max_depth(node: &view::ViewNode, depth: usize, max_depth: usize) -> 
 fn exercise_pipeline(input: &str, draft: Option<Dialect>) {
     match schema::parse(input, draft) {
         Ok(parsed) => {
-            for verbose in [false, true] {
-                let options = view::ViewOptions {
-                    verbose,
-                    ..view::ViewOptions::default()
-                };
-                let document =
-                    view::from_schema(&parsed.root, &parsed.root, "root", false, &options);
-                let _ = text::render(&document, &text::ColorTheme::default());
+            for definitions in [
+                view::DefinitionsMode::All,
+                view::DefinitionsMode::Referenced,
+                view::DefinitionsMode::None,
+            ] {
+                for verbose in [false, true] {
+                    let options = view::ViewOptions {
+                        verbose,
+                        definitions,
+                        ..view::ViewOptions::default()
+                    };
+                    let document =
+                        view::from_schema(&parsed.root, &parsed.root, "root", false, &options);
+                    let _ = text::render(&document, &text::ColorTheme::default());
+                }
             }
         }
         Err(error) => {

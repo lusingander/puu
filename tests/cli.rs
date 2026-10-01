@@ -1,5 +1,7 @@
 #[path = "cli/color.rs"]
 mod color;
+#[path = "cli/definitions.rs"]
+mod definitions;
 #[path = "cli/depth.rs"]
 mod depth;
 #[path = "cli/error.rs"]
