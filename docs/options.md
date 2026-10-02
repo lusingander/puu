@@ -18,6 +18,7 @@ Run the following command from the repository root to update the images:
 - [Annotation display](#annotation-display)
 - [Verbose output](#verbose-output)
 - [Color output](#color-output)
+- [Help](#help)
 
 ## Draft override
 
@@ -340,3 +341,11 @@ puu --color never docs/examples/options/color.json
 ![Output with color disabled](assets/options/color-never.png)
 
 In `auto` mode, Puu follows terminal detection and the color environment. Use `always` when another program in a pipeline must receive ANSI styling, and `never` when writing stable plain-text output. An explicit `always` overrides a disabling environment such as `NO_COLOR`; an explicit `never` overrides a forced-color environment such as `CLICOLOR_FORCE`.
+
+## Help
+
+`-h` / `--help` prints the command synopsis, schema argument, options, defaults, and accepted values, then exits successfully. It does not require a schema argument.
+
+```console
+puu --help
+```
