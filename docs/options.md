@@ -12,6 +12,7 @@ Run the following command from the repository root to update the images:
 
 - [Draft override](#draft-override)
 - [JSON Pointer selection](#json-pointer-selection)
+- [Maximum display depth](#maximum-display-depth)
 
 ## Draft override
 
@@ -85,3 +86,38 @@ puu --pointer '#/$defs/User' docs/examples/options/pointer.json
 The selected node is labeled with its document location. Definitions are still displayed according to `--definitions`; the default `all` mode explains why `User` also appears in the separate `Definitions` section above. With `--definitions referenced`, reference traversal starts at the selected schema.
 
 Quote pointers beginning with `#` so that the shell does not treat the value as a comment. A pointer must identify a schema rather than an arbitrary JSON value such as a `$ref` string.
+
+## Maximum display depth
+
+`-L N` / `--max-depth N` limits the indentation depth of every rendered tree, counting each root as depth 0. It keeps nodes at the limit and replaces their children with an explicit omission marker.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "customer": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "address": {
+          "type": "object",
+          "properties": {
+            "city": { "type": "string" }
+          }
+        }
+      }
+    },
+    "status": { "type": "string" }
+  }
+}
+```
+
+[Example input](examples/options/max-depth.json)
+
+```console
+puu --max-depth 1 docs/examples/options/max-depth.json
+```
+
+![Output limited to depth 1](assets/options/max-depth-1.png)
+
+A leaf at the limit is unchanged because it has no children to omit. Expanded reference targets and nodes in the separate `Definitions` section follow the same depth rule.

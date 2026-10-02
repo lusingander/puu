@@ -1,0 +1,18 @@
+{
+  "type": "object",
+  "properties": {
+    "customer": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "address": {
+          "type": "object",
+          "properties": {
+            "city": { "type": "string" }
+          }
+        }
+      }
+    },
+    "status": { "type": "string" }
+  }
+}

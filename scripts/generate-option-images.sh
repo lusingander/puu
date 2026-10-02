@@ -43,6 +43,12 @@ render_all() {
     "always" \
     "docs/examples/options/pointer.json" \
     --pointer '#/$defs/User'
+
+  render_image \
+    "max-depth-1" \
+    "always" \
+    "docs/examples/options/max-depth.json" \
+    --max-depth 1
 }
 
 (
