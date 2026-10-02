@@ -27,7 +27,16 @@ render_image() {
 
 render_all() {
   # Keep each option's examples together so they can be reviewed independently.
-  :
+  render_image \
+    "draft-2019-09" \
+    "always" \
+    "docs/examples/options/draft.json" \
+    --draft 2019-09
+  render_image \
+    "draft-7" \
+    "always" \
+    "docs/examples/options/draft.json" \
+    --draft 7
 }
 
 (
