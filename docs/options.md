@@ -17,6 +17,7 @@ Run the following command from the repository root to update the images:
 - [Reference expansion](#reference-expansion)
 - [Annotation display](#annotation-display)
 - [Verbose output](#verbose-output)
+- [Color output](#color-output)
 
 ## Draft override
 
@@ -301,3 +302,41 @@ puu --verbose docs/examples/options/verbose.json
 ![Verbose output](assets/options/verbose-full.png)
 
 Long annotation text that is truncated in the compact view is also shown in full. `--verbose` does not make Puu interpret unknown keywords; it only reveals their values. When combined with `--exclude-annotations`, recognized annotations remain hidden while metadata and uninterpreted values keep their verbose detail.
+
+## Color output
+
+`-c COLOR` / `--color COLOR` controls ANSI color in the rendered tree. The supported values are `auto`, `always`, and `never`; the default is `auto`.
+
+```json
+{
+  "type": "object",
+  "required": ["id"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "format": "uuid"
+    }
+  }
+}
+```
+
+[Example input](examples/options/color.json)
+
+`always` emits color even when output is redirected or piped:
+
+```console
+puu --color always docs/examples/options/color.json
+```
+
+![Output with color enabled](assets/options/color-always.png)
+
+`never` emits plain text:
+
+```console
+puu --color never docs/examples/options/color.json
+```
+
+![Output with color disabled](assets/options/color-never.png)
+
+In `auto` mode, Puu follows terminal detection and the color environment. Use `always` when another program in a pipeline must receive ANSI styling, and `never` when writing stable plain-text output. An explicit `always` overrides a disabling environment such as `NO_COLOR`; an explicit `never` overrides a forced-color environment such as `CLICOLOR_FORCE`.

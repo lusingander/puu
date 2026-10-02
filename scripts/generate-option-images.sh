@@ -22,6 +22,7 @@ render_image() {
   "$ROOT_DIR/target/debug/puu" "--color=$color" "$@" "$ROOT_DIR/$input_path" \
     | "$freeze_bin" \
       --config "$ROOT_DIR/docs/freeze.json" \
+      --language ansi \
       --output "$temporary_asset_dir/$image_name.png"
 }
 
@@ -91,6 +92,15 @@ render_all() {
     "always" \
     "docs/examples/options/verbose.json" \
     --verbose
+
+  render_image \
+    "color-always" \
+    "always" \
+    "docs/examples/options/color.json"
+  render_image \
+    "color-never" \
+    "never" \
+    "docs/examples/options/color.json"
 }
 
 (
