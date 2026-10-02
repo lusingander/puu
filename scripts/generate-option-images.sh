@@ -81,6 +81,16 @@ render_all() {
     "always" \
     "docs/examples/options/annotations.json" \
     --exclude-annotations
+
+  render_image \
+    "verbose-compact" \
+    "always" \
+    "docs/examples/options/verbose.json"
+  render_image \
+    "verbose-full" \
+    "always" \
+    "docs/examples/options/verbose.json" \
+    --verbose
 }
 
 (

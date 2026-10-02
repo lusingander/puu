@@ -16,6 +16,7 @@ Run the following command from the repository root to update the images:
 - [Definition display](#definition-display)
 - [Reference expansion](#reference-expansion)
 - [Annotation display](#annotation-display)
+- [Verbose output](#verbose-output)
 
 ## Draft override
 
@@ -267,3 +268,36 @@ puu --exclude-annotations docs/examples/options/annotations.json
 Constraints, schema identity, references, uninterpreted or ignored keyword markers, and metadata such as `$vocabulary` remain visible. Expanded references and definitions use the same annotation setting.
 
 A `contentSchema` is omitted with the annotations unless it is selected directly with `--pointer` or reached as a reference target. In `--definitions referenced` mode, references found only inside an omitted content schema do not make a definition visible. When combined with `--verbose`, annotation exclusion still takes precedence while non-annotation details remain verbose.
+
+## Verbose output
+
+`-v` / `--verbose` shows complete annotation details and the values of uninterpreted keywords. Without it, Puu keeps common output compact by summarizing or omitting those details.
+
+```json
+{
+  "$comment": "Internal.",
+  "type": "string",
+  "examples": ["a", "b"],
+  "x-ui": { "widget": "text" }
+}
+```
+
+[Example input](examples/options/verbose.json)
+
+The default output summarizes the example values, omits `$comment`, and reports only the uninterpreted keyword name:
+
+```console
+puu docs/examples/options/verbose.json
+```
+
+![Compact output](assets/options/verbose-compact.png)
+
+Verbose output includes the complete examples, `$comment`, and the uninterpreted JSON value:
+
+```console
+puu --verbose docs/examples/options/verbose.json
+```
+
+![Verbose output](assets/options/verbose-full.png)
+
+Long annotation text that is truncated in the compact view is also shown in full. `--verbose` does not make Puu interpret unknown keywords; it only reveals their values. When combined with `--exclude-annotations`, recognized annotations remain hidden while metadata and uninterpreted values keep their verbose detail.
