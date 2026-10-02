@@ -10,16 +10,16 @@ Run the following command from the repository root to update the images:
 
 ## Contents
 
-- [Draft override](#draft-override)
-- [JSON Pointer selection](#json-pointer-selection)
-- [Maximum display depth](#maximum-display-depth)
-- [Definition display](#definition-display)
-- [Reference expansion](#reference-expansion)
-- [Annotation display](#annotation-display)
-- [Verbose output](#verbose-output)
-- [Color output](#color-output)
-- [Help](#help)
-- [Version](#version)
+- [Draft override (`-d` / `--draft`)](#draft-override)
+- [JSON Pointer selection (`-p` / `--pointer`)](#json-pointer-selection)
+- [Maximum display depth (`-L` / `--max-depth`)](#maximum-display-depth)
+- [Definition display (`-D` / `--definitions`)](#definition-display)
+- [Reference expansion (`-r` / `--expand-refs`)](#reference-expansion)
+- [Annotation display (`-a` / `--exclude-annotations`)](#annotation-display)
+- [Verbose output (`-v` / `--verbose`)](#verbose-output)
+- [Color output (`-c` / `--color`)](#color-output)
+- [Help (`-h` / `--help`)](#help)
+- [Version (`-V` / `--version`)](#version)
 
 ## Draft override
 
