@@ -11,6 +11,7 @@ Run the following command from the repository root to update the images:
 ## Contents
 
 - [Draft override](#draft-override)
+- [JSON Pointer selection](#json-pointer-selection)
 
 ## Draft override
 
@@ -49,3 +50,38 @@ puu --draft 7 docs/examples/options/draft.json
 ![Output interpreted as Draft 7](assets/options/draft-7.png)
 
 The override applies to embedded resources as well as the document root. It can therefore make an input invalid when a keyword has a different shape in the selected draft.
+
+## JSON Pointer selection
+
+`-p POINTER` / `--pointer POINTER` renders a schema at a particular location instead of starting at the document root. It accepts `#`, URI fragment JSON Pointers such as `#/$defs/User`, and JSON Pointers without the fragment marker such as `/$defs/User`.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "orderId": { "type": "string" }
+  },
+  "$defs": {
+    "User": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" }
+      }
+    }
+  }
+}
+```
+
+[Example input](examples/options/pointer.json)
+
+```console
+puu --pointer '#/$defs/User' docs/examples/options/pointer.json
+```
+
+![Output selected at the User definition](assets/options/pointer-user.png)
+
+The selected node is labeled with its document location. Definitions are still displayed according to `--definitions`; the default `all` mode explains why `User` also appears in the separate `Definitions` section above. With `--definitions referenced`, reference traversal starts at the selected schema.
+
+Quote pointers beginning with `#` so that the shell does not treat the value as a comment. A pointer must identify a schema rather than an arbitrary JSON value such as a `$ref` string.

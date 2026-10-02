@@ -37,6 +37,12 @@ render_all() {
     "always" \
     "docs/examples/options/draft.json" \
     --draft 7
+
+  render_image \
+    "pointer-user" \
+    "always" \
+    "docs/examples/options/pointer.json" \
+    --pointer '#/$defs/User'
 }
 
 (

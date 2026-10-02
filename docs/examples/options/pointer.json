@@ -1,0 +1,16 @@
+{
+  "type": "object",
+  "properties": {
+    "orderId": { "type": "string" }
+  },
+  "$defs": {
+    "User": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" }
+      }
+    }
+  }
+}
