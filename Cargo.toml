@@ -1,6 +1,6 @@
 [package]
 name = "puu"
-version = "0.1.0"
+version = "0.2.0"
 description = "Render JSON Schema for humans"
 authors = ["Kyosuke Fujimoto <kyoro.f@gmail.com>"]
 homepage = "https://github.com/lusingander/puu"
