@@ -13,6 +13,7 @@ Run the following command from the repository root to update the images:
 - [Draft override](#draft-override)
 - [JSON Pointer selection](#json-pointer-selection)
 - [Maximum display depth](#maximum-display-depth)
+- [Definition display](#definition-display)
 
 ## Draft override
 
@@ -121,3 +122,63 @@ puu --max-depth 1 docs/examples/options/max-depth.json
 ![Output limited to depth 1](assets/options/max-depth-1.png)
 
 A leaf at the limit is unchanged because it has no children to omit. Expanded reference targets and nodes in the separate `Definitions` section follow the same depth rule.
+
+## Definition display
+
+`-D MODE` / `--definitions MODE` controls the separate `Definitions` section. The default mode is `all`; the other modes are `referenced` and `none`.
+
+The example references `User`, which in turn references `Name`, while `Unused` is not referenced:
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "customer": { "$ref": "#/$defs/User" }
+  },
+  "$defs": {
+    "User": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": { "$ref": "#/$defs/Name" }
+      }
+    },
+    "Name": { "type": "string" },
+    "Unused": { "type": "integer" }
+  }
+}
+```
+
+[Example input](examples/options/references.json)
+
+### All definitions
+
+`all` displays every definition and is the default:
+
+```console
+puu --definitions all docs/examples/options/references.json
+```
+
+![Output with all definitions](assets/options/definitions-all.png)
+
+### Referenced definitions
+
+`referenced` displays definitions transitively reachable from the rendered schema. `Unused` is omitted, but `Name` remains because `User` references it:
+
+```console
+puu --definitions referenced docs/examples/options/references.json
+```
+
+![Output with referenced definitions](assets/options/definitions-referenced.png)
+
+### No definitions
+
+`none` removes the separate section without hiding references in the rendered schema:
+
+```console
+puu --definitions none docs/examples/options/references.json
+```
+
+![Output without the definitions section](assets/options/definitions-none.png)
+
+With `--pointer`, traversal in `referenced` mode starts at the selected schema. Definition selection follows references independently of `--max-depth`.

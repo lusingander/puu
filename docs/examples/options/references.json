@@ -1,0 +1,17 @@
+{
+  "type": "object",
+  "properties": {
+    "customer": { "$ref": "#/$defs/User" }
+  },
+  "$defs": {
+    "User": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": { "$ref": "#/$defs/Name" }
+      }
+    },
+    "Name": { "type": "string" },
+    "Unused": { "type": "integer" }
+  }
+}

@@ -49,6 +49,22 @@ render_all() {
     "always" \
     "docs/examples/options/max-depth.json" \
     --max-depth 1
+
+  render_image \
+    "definitions-all" \
+    "always" \
+    "docs/examples/options/references.json" \
+    --definitions all
+  render_image \
+    "definitions-referenced" \
+    "always" \
+    "docs/examples/options/references.json" \
+    --definitions referenced
+  render_image \
+    "definitions-none" \
+    "always" \
+    "docs/examples/options/references.json" \
+    --definitions none
 }
 
 (
