@@ -19,6 +19,7 @@ Run the following command from the repository root to update the images:
 - [Verbose output](#verbose-output)
 - [Color output](#color-output)
 - [Help](#help)
+- [Version](#version)
 
 ## Draft override
 
@@ -348,4 +349,12 @@ In `auto` mode, Puu follows terminal detection and the color environment. Use `a
 
 ```console
 puu --help
+```
+
+## Version
+
+`-V` / `--version` prints the `puu` package name and version, then exits successfully. It does not require a schema argument.
+
+```console
+puu --version
 ```
