@@ -77,54 +77,7 @@ Options:
   -V, --version              Print version
 ```
 
-### Pointer selection
-
-`--pointer` renders a specific schema from the document. It accepts `#`, URI fragment JSON Pointers such as `#/$defs/User`, and JSON Pointers without the fragment marker such as `/$defs/User`. Quote values beginning with `#` in the shell.
-
-### Maximum display depth
-
-`-L N` / `--max-depth N` limits the indentation depth of the rendered tree, counting each root as depth 0. When a node at the limit has children, Puu displays `… [children omitted]` below it instead of silently dropping the children.
-
-### Definition display
-
-`-D MODE` / `--definitions MODE` controls the separate `Definitions` section:
-
-- `all` displays every definition in the document and is the default.
-- `referenced` displays definitions transitively reachable through local references from the rendered schema. With `--pointer`, traversal starts at the selected schema.
-- `none` omits the section.
-
-References in the rendered schema remain visible in every mode. Definition selection follows schema references independently of `--max-depth`. With `--expand-refs`, references are also expanded inside the `Definitions` section.
-
-### Annotation display
-
-`-a` / `--exclude-annotations` hides recognized annotation keywords: `title`, `description`, `default`, `examples`, `deprecated`, `readOnly`, `writeOnly`, `format`, `$comment`, and the content-related keywords. A `contentSchema` and its subtree are omitted unless that schema is explicitly selected with `--pointer` or reached as a reference target.
-
-Constraints, schema identity, reference information, uninterpreted and ignored keyword markers, and metadata such as `$vocabulary` remain visible. With `--verbose --exclude-annotations`, annotations stay hidden while metadata and uninterpreted keyword values retain their verbose detail. Expanded references and definitions use the same annotation setting. In `--definitions referenced` mode, references found only inside an omitted `contentSchema` do not make a definition visible.
-
-### Reference expansion
-
-`-r` / `--expand-refs` displays a locally resolved reference target as a child of the reference line. The reference line retains its own constraints and annotations; the child shows the target schema with an `[expanded from $ref]` marker.
-
-```text
-root object
-└─ customer -> User [required]
-   └─ User object [expanded from $ref]
-      ├─ name string [required]
-      └─ email string [format: email]
-```
-
-Reference chains are expanded transitively. Targets can be definitions, properties, logical branches, or other schemas in the document. Repeated targets are expanded separately in each branch. A reference back to a schema already on the current path is shown with `[expansion stopped: cycle]`.
-
-`--pointer` selects the starting schema; references can still reach targets elsewhere in the document. `--definitions` independently controls the separate section. For a single expanded tree, use:
-
-```console
-puu -r --definitions none --max-depth 4 schema.json
-puu -r --pointer '#/$defs/User' --definitions none schema.json
-```
-
-Expanded target nodes count toward the display depth. Children beyond `--max-depth` are omitted before construction. Reference expansion also has internal limits of display depth 64 and 10,000 constructed expansion nodes across the output, excluding omission markers. Reaching these limits displays `[expansion stopped: depth limit]` or `[expansion stopped: node limit]`.
-
-For locally resolved `$dynamicRef` and `$recursiveRef`, Puu expands the initial target recorded during schema loading. When dynamic resolution could change the target, `[initial target; dynamic scope not evaluated]` makes that limitation explicit. Dynamic scope is not evaluated. External and unresolved references keep their existing markers and are not expanded or fetched.
+For concrete inputs, rendered images, and interaction details for every option, see the [CLI option guide](docs/options.md).
 
 ### Supported scope
 

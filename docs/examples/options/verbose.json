@@ -1,0 +1,6 @@
+{
+  "$comment": "Internal.",
+  "type": "string",
+  "examples": ["a", "b"],
+  "x-ui": { "widget": "text" }
+}

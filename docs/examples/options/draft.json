@@ -1,0 +1,9 @@
+{
+  "type": "object",
+  "dependencies": {
+    "legacy": ["oldTarget"]
+  },
+  "dependentRequired": {
+    "modern": ["newTarget"]
+  }
+}
