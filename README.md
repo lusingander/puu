@@ -1,5 +1,7 @@
 # Puu
 
+[![Crate Status](https://img.shields.io/crates/v/puu.svg)](https://crates.io/crates/puu)
+
 Render JSON Schema for humans 🌳
 
 ## About
