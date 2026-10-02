@@ -15,6 +15,7 @@ Run the following command from the repository root to update the images:
 - [Maximum display depth](#maximum-display-depth)
 - [Definition display](#definition-display)
 - [Reference expansion](#reference-expansion)
+- [Annotation display](#annotation-display)
 
 ## Draft override
 
@@ -211,3 +212,58 @@ References are expanded transitively and repeated targets are expanded independe
 Expansion is bounded to a display depth of 64 and 10,000 constructed expansion nodes across the output, excluding omission markers. Puu marks those boundaries with `[expansion stopped: depth limit]` or `[expansion stopped: node limit]`. External and unresolved references remain visible but are not fetched or expanded.
 
 For locally resolved `$dynamicRef` and `$recursiveRef`, Puu expands the initial target recorded while loading the schema. When dynamic resolution could select a different target, the output includes `[initial target; dynamic scope not evaluated]`.
+
+## Annotation display
+
+Annotations are displayed by default. `-a` / `--exclude-annotations` hides `title`, `description`, `default`, `examples`, `deprecated`, `readOnly`, `writeOnly`, `format`, `$comment`, and the content-related keywords.
+
+The example includes annotations on the root and its properties, plus a `contentSchema` subtree:
+
+```json
+{
+  "$comment": "Used by schema maintainers.",
+  "title": "Order",
+  "description": "A customer order.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "readOnly": true
+    },
+    "payload": {
+      "type": "string",
+      "contentEncoding": "base64",
+      "contentMediaType": "application/json",
+      "contentSchema": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string" }
+        }
+      }
+    }
+  }
+}
+```
+
+[Example input](examples/options/annotations.json)
+
+Without the option, the annotations and content schema are part of the output:
+
+```console
+puu docs/examples/options/annotations.json
+```
+
+![Output with annotations](assets/options/annotations-included.png)
+
+With `--exclude-annotations`, both annotations and the `contentSchema` subtree are omitted:
+
+```console
+puu --exclude-annotations docs/examples/options/annotations.json
+```
+
+![Output without annotations](assets/options/annotations-excluded.png)
+
+Constraints, schema identity, references, uninterpreted or ignored keyword markers, and metadata such as `$vocabulary` remain visible. Expanded references and definitions use the same annotation setting.
+
+A `contentSchema` is omitted with the annotations unless it is selected directly with `--pointer` or reached as a reference target. In `--definitions referenced` mode, references found only inside an omitted content schema do not make a definition visible. When combined with `--verbose`, annotation exclusion still takes precedence while non-annotation details remain verbose.

@@ -71,6 +71,16 @@ render_all() {
     "always" \
     "docs/examples/options/references.json" \
     --expand-refs --definitions none
+
+  render_image \
+    "annotations-included" \
+    "always" \
+    "docs/examples/options/annotations.json"
+  render_image \
+    "annotations-excluded" \
+    "always" \
+    "docs/examples/options/annotations.json" \
+    --exclude-annotations
 }
 
 (
