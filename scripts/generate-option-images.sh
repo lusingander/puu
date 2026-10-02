@@ -65,6 +65,12 @@ render_all() {
     "always" \
     "docs/examples/options/references.json" \
     --definitions none
+
+  render_image \
+    "expand-refs" \
+    "always" \
+    "docs/examples/options/references.json" \
+    --expand-refs --definitions none
 }
 
 (

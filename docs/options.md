@@ -14,6 +14,7 @@ Run the following command from the repository root to update the images:
 - [JSON Pointer selection](#json-pointer-selection)
 - [Maximum display depth](#maximum-display-depth)
 - [Definition display](#definition-display)
+- [Reference expansion](#reference-expansion)
 
 ## Draft override
 
@@ -182,3 +183,31 @@ puu --definitions none docs/examples/options/references.json
 ![Output without the definitions section](assets/options/definitions-none.png)
 
 With `--pointer`, traversal in `referenced` mode starts at the selected schema. Definition selection follows references independently of `--max-depth`.
+
+## Reference expansion
+
+`-r` / `--expand-refs` adds the locally resolved target below each reference line. The reference remains visible with its own constraints and annotations, while the target is marked with `[expanded from $ref]`.
+
+This example uses the same [reference input](examples/options/references.json) as the definition modes above. Without expansion, and with the separate definitions section hidden, only the reference is displayed:
+
+```console
+puu --definitions none docs/examples/options/references.json
+```
+
+![Unexpanded reference output](assets/options/definitions-none.png)
+
+Adding `--expand-refs` follows the reference chain from `User` to `Name`:
+
+```console
+puu --expand-refs --definitions none docs/examples/options/references.json
+```
+
+![Expanded reference output](assets/options/expand-refs.png)
+
+References are expanded transitively and repeated targets are expanded independently in each branch. Targets may be definitions, properties, logical branches, or other schemas in the input document. A reference back to a schema already on the current path is left visible with `[expansion stopped: cycle]`.
+
+`--pointer` selects the starting schema but does not prevent references from reaching other parts of the document. `--definitions` independently controls the separate section; expansion also applies inside that section when it is displayed. Expanded targets count toward `--max-depth`.
+
+Expansion is bounded to a display depth of 64 and 10,000 constructed expansion nodes across the output, excluding omission markers. Puu marks those boundaries with `[expansion stopped: depth limit]` or `[expansion stopped: node limit]`. External and unresolved references remain visible but are not fetched or expanded.
+
+For locally resolved `$dynamicRef` and `$recursiveRef`, Puu expands the initial target recorded while loading the schema. When dynamic resolution could select a different target, the output includes `[initial target; dynamic scope not evaluated]`.
