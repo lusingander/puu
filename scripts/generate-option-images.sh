@@ -52,6 +52,17 @@ render_all() {
     --max-depth 1
 
   render_image \
+    "layout-sections" \
+    "always" \
+    "docs/examples/options/references.json" \
+    --layout sections
+  render_image \
+    "layout-tree" \
+    "always" \
+    "docs/examples/options/references.json" \
+    --layout tree
+
+  render_image \
     "definitions-all" \
     "always" \
     "docs/examples/options/references.json" \

@@ -13,6 +13,7 @@ Run the following command from the repository root to update the images:
 - [Draft override (`-d` / `--draft`)](#draft-override)
 - [JSON Pointer selection (`-p` / `--pointer`)](#json-pointer-selection)
 - [Maximum display depth (`-L` / `--max-depth`)](#maximum-display-depth)
+- [Output layout (`-l` / `--layout`)](#output-layout)
 - [Definition display (`-D` / `--definitions`)](#definition-display)
 - [Reference expansion (`-r` / `--expand-refs`)](#reference-expansion)
 - [Annotation display (`-a` / `--exclude-annotations`)](#annotation-display)
@@ -129,9 +130,41 @@ puu --max-depth 1 docs/examples/options/max-depth.json
 
 A leaf at the limit is unchanged because it has no children to omit. Expanded reference targets and nodes in the separate `Definitions` section follow the same depth rule.
 
+With `--layout tree`, the common `Schema` parent is excluded from the depth count. The schema root and the `Definitions` heading remain at depth 0, so switching layouts preserves which nodes are visible.
+
+## Output layout
+
+`-l MODE` / `--layout MODE` arranges all output blocks. The default `sections` mode separates the schema tree and other blocks with blank lines. The `tree` mode places every block under a common `Schema` parent, including any blocks added in the future.
+
+The example uses the [reference input](examples/options/references.json) shown in the definition display section below.
+
+### Separate sections
+
+`sections` keeps the schema tree and `Definitions` as separate blocks:
+
+```console
+puu --layout sections docs/examples/options/references.json
+```
+
+![Output with separate sections](assets/options/layout-sections.png)
+
+### Single tree
+
+`tree` connects the same blocks under one parent:
+
+```console
+puu --layout tree docs/examples/options/references.json
+```
+
+![Output as a single tree](assets/options/layout-tree.png)
+
+`--definitions` controls which definitions are included in either layout. When no definitions are displayed, `tree` still places the schema root under `Schema`. The parent label is the same for file, URL, and standard input.
+
+`--pointer` still selects the schema shown in the first block and keeps its location label. Reference expansion and annotation options apply to the same nodes in either layout. The common parent does not count toward `--max-depth` or reference expansion limits.
+
 ## Definition display
 
-`-D MODE` / `--definitions MODE` controls the separate `Definitions` section. The default mode is `all`; the other modes are `referenced` and `none`.
+`-D MODE` / `--definitions MODE` controls the `Definitions` block in either layout. The default mode is `all`; the other modes are `referenced` and `none`.
 
 The example references `User`, which in turn references `Name`, while `Unused` is not referenced:
 
@@ -179,7 +212,7 @@ puu --definitions referenced docs/examples/options/references.json
 
 ### No definitions
 
-`none` removes the separate section without hiding references in the rendered schema:
+`none` removes the definitions block without hiding references in the rendered schema:
 
 ```console
 puu --definitions none docs/examples/options/references.json
@@ -211,7 +244,7 @@ puu --expand-refs --definitions none docs/examples/options/references.json
 
 References are expanded transitively and repeated targets are expanded independently in each branch. Targets may be definitions, properties, logical branches, or other schemas in the input document. A reference back to a schema already on the current path is left visible with `[expansion stopped: cycle]`.
 
-`--pointer` selects the starting schema but does not prevent references from reaching other parts of the document. `--definitions` independently controls the separate section; expansion also applies inside that section when it is displayed. Expanded targets count toward `--max-depth`.
+`--pointer` selects the starting schema but does not prevent references from reaching other parts of the document. `--definitions` independently controls the definitions block; expansion also applies inside that block when it is displayed. Expanded targets count toward `--max-depth`.
 
 Expansion is bounded to a display depth of 64 and 10,000 constructed expansion nodes across the output, excluding omission markers. Puu marks those boundaries with `[expansion stopped: depth limit]` or `[expansion stopped: node limit]`. External and unresolved references remain visible but are not fetched or expanded.
 

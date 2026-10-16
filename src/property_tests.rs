@@ -413,7 +413,7 @@ fn render_pipeline(
         metadata: plain.clone(),
         marker: plain,
     };
-    Ok(text::render(&document, &theme))
+    Ok(text::render(&document, &theme, text::Layout::Sections))
 }
 
 fn respects_max_depth(node: &view::ViewNode, depth: usize, max_depth: usize) -> bool {
@@ -454,7 +454,9 @@ fn exercise_pipeline(input: &str, draft: Option<Dialect>) {
                             false,
                             &options,
                         );
-                        let _ = text::render(&document, &text::ColorTheme::default());
+                        for layout in [text::Layout::Sections, text::Layout::Tree] {
+                            let _ = text::render(&document, &text::ColorTheme::default(), layout);
+                        }
                     }
                 }
             }
