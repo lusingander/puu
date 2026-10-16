@@ -38,7 +38,13 @@ struct Args {
     max_depth: Option<usize>,
 
     /// Arrange output as separate sections or a single tree
-    #[arg(long, value_enum, default_value = "sections", value_name = "MODE")]
+    #[arg(
+        short,
+        long,
+        value_enum,
+        default_value = "sections",
+        value_name = "MODE"
+    )]
     layout: text::Layout,
 
     /// Control which definitions are displayed

@@ -28,7 +28,7 @@ fn defaults_to_sections_and_accepts_explicit_sections() {
     let expected =
         fs::read(fixture("render", "definitions", "txt")).expect("expected output should exist");
 
-    for arguments in [vec![], vec!["--layout", "sections"]] {
+    for arguments in [vec![], vec!["--layout", "sections"], vec!["-l", "sections"]] {
         command()
             .args(arguments)
             .arg(fixture("render", "definitions", "json"))
@@ -73,9 +73,13 @@ Schema
    └─ customer -> User
 "
 )]
-fn tree_layout_respects_definition_selection(#[case] mode: &str, #[case] expected: &str) {
+fn tree_layout_respects_definition_selection(
+    #[values("--layout", "-l")] option: &str,
+    #[case] mode: &str,
+    #[case] expected: &str,
+) {
     command()
-        .args(["--layout", "tree", "--definitions", mode, "-"])
+        .args([option, "tree", "--definitions", mode, "-"])
         .write_stdin(INPUT)
         .assert()
         .success()
@@ -86,7 +90,7 @@ fn tree_layout_respects_definition_selection(#[case] mode: &str, #[case] expecte
 #[test]
 fn tree_layout_wraps_a_schema_without_definitions() {
     command()
-        .args(["--layout", "tree", "-L", "0"])
+        .args(["-l", "tree", "-L", "0"])
         .arg(fixture("render", "scalar-string", "json"))
         .assert()
         .success()

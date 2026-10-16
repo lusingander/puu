@@ -13,7 +13,7 @@ Run the following command from the repository root to update the images:
 - [Draft override (`-d` / `--draft`)](#draft-override)
 - [JSON Pointer selection (`-p` / `--pointer`)](#json-pointer-selection)
 - [Maximum display depth (`-L` / `--max-depth`)](#maximum-display-depth)
-- [Output layout (`--layout`)](#output-layout)
+- [Output layout (`-l` / `--layout`)](#output-layout)
 - [Definition display (`-D` / `--definitions`)](#definition-display)
 - [Reference expansion (`-r` / `--expand-refs`)](#reference-expansion)
 - [Annotation display (`-a` / `--exclude-annotations`)](#annotation-display)
@@ -134,7 +134,7 @@ With `--layout tree`, the common `Schema` parent is excluded from the depth coun
 
 ## Output layout
 
-`--layout MODE` arranges all output blocks. The default `sections` mode separates the schema tree and other blocks with blank lines. The `tree` mode places every block under a common `Schema` parent, including any blocks added in the future.
+`-l MODE` / `--layout MODE` arranges all output blocks. The default `sections` mode separates the schema tree and other blocks with blank lines. The `tree` mode places every block under a common `Schema` parent, including any blocks added in the future.
 
 The example uses the [reference input](examples/options/references.json) shown in the definition display section below.
 
