@@ -96,8 +96,12 @@ mod tests {
             pointer.is_some(),
             &options,
         );
-        console::strip_ansi_codes(&text::render(&document, &text::ColorTheme::default()))
-            .into_owned()
+        console::strip_ansi_codes(&text::render(
+            &document,
+            &text::ColorTheme::default(),
+            text::Layout::Sections,
+        ))
+        .into_owned()
     }
 
     #[test]

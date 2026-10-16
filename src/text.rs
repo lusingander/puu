@@ -4,6 +4,12 @@ use console::Style;
 
 use crate::view::{SchemaNodeRole, ViewDetailKind, ViewDocument, ViewNode, ViewNodeRole};
 
+#[derive(clap::ValueEnum, Clone, Copy, Debug, Eq, PartialEq)]
+pub enum Layout {
+    Sections,
+    Tree,
+}
+
 pub struct ColorTheme {
     pub key: Style,
     pub value: Style,
@@ -28,13 +34,21 @@ impl Default for ColorTheme {
     }
 }
 
-pub fn render(document: &ViewDocument, theme: &ColorTheme) -> String {
+pub fn render(document: &ViewDocument, theme: &ColorTheme, layout: Layout) -> String {
     let mut output = String::new();
-    for (index, root) in document.roots.iter().enumerate() {
-        if index > 0 {
-            output.push('\n');
+    match layout {
+        Layout::Sections => {
+            for (index, root) in document.roots.iter().enumerate() {
+                if index > 0 {
+                    output.push('\n');
+                }
+                render_node(root, "", "", theme, &mut output);
+            }
         }
-        render_node(root, "", "", theme, &mut output);
+        Layout::Tree => {
+            writeln!(output, "{}", theme.value.apply_to("Schema")).expect("writing to String");
+            render_children(&document.roots, "", theme, &mut output);
+        }
     }
     output
 }
@@ -107,13 +121,17 @@ fn render_node(
     } else {
         prefix.to_owned()
     };
-    for (index, child) in node.children.iter().enumerate() {
-        let connector = if index + 1 == node.children.len() {
+    render_children(&node.children, &child_prefix, theme, output);
+}
+
+fn render_children(children: &[ViewNode], prefix: &str, theme: &ColorTheme, output: &mut String) {
+    for (index, child) in children.iter().enumerate() {
+        let connector = if index + 1 == children.len() {
             "└─ "
         } else {
             "├─ "
         };
-        render_node(child, &child_prefix, connector, theme, output);
+        render_node(child, prefix, connector, theme, output);
     }
 }
 
@@ -139,7 +157,7 @@ mod tests {
 
     use crate::view::{SchemaNodeRole, ViewDocument, ViewNode, ViewNodeRole};
 
-    use super::{ColorTheme, render};
+    use super::{ColorTheme, Layout, render};
 
     #[test]
     fn escapes_control_characters_in_rendered_content() {
@@ -163,6 +181,30 @@ mod tests {
             marker: plain,
         };
 
-        assert_eq!(render(&document, &theme), "key\\n value\\u{1b}\n");
+        assert_eq!(
+            render(&document, &theme, Layout::Sections),
+            "key\\n value\\u{1b}\n"
+        );
+    }
+
+    #[test]
+    fn tree_layout_includes_every_top_level_block() {
+        let document = ViewDocument {
+            roots: ["root", "Definitions", "Another block"]
+                .map(|value| ViewNode {
+                    role: ViewNodeRole::Section,
+                    key: None,
+                    value: value.to_owned(),
+                    details: Vec::new(),
+                    children: Vec::new(),
+                })
+                .into(),
+        };
+
+        let output = render(&document, &ColorTheme::default(), Layout::Tree);
+        assert_eq!(
+            console::strip_ansi_codes(&output),
+            "Schema\n├─ root\n├─ Definitions\n└─ Another block\n"
+        );
     }
 }

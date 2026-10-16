@@ -37,6 +37,10 @@ struct Args {
     #[arg(short = 'L', long, value_name = "N")]
     max_depth: Option<usize>,
 
+    /// Arrange output as separate sections or a single tree
+    #[arg(long, value_enum, default_value = "sections", value_name = "MODE")]
+    layout: text::Layout,
+
     /// Control which definitions are displayed
     #[arg(
         short = 'D',
@@ -96,7 +100,7 @@ fn run() -> Result<(), String> {
         args.pointer.is_some(),
         &options,
     );
-    let tree = text::render(&document, &text::ColorTheme::default());
+    let tree = text::render(&document, &text::ColorTheme::default(), args.layout);
     write_output(&tree)
 }
 

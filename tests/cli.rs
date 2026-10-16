@@ -12,6 +12,8 @@ mod error;
 mod input;
 #[path = "cli/inventory.rs"]
 mod inventory;
+#[path = "cli/layout.rs"]
+mod layout;
 #[path = "cli/options.rs"]
 mod options;
 #[path = "cli/output.rs"]
