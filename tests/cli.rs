@@ -26,3 +26,5 @@ mod references;
 mod render;
 #[path = "cli/support.rs"]
 mod support;
+#[path = "cli/width.rs"]
+mod width;

@@ -37,6 +37,10 @@ struct Args {
     #[arg(short = 'L', long, value_name = "N")]
     max_depth: Option<usize>,
 
+    /// Limit output width in terminal columns (at least 2)
+    #[arg(long, value_name = "N", value_parser = parse_max_width)]
+    max_width: Option<usize>,
+
     /// Arrange output as separate sections or a single tree
     #[arg(
         short,
@@ -111,10 +115,18 @@ fn run() -> Result<(), String> {
         &text::ColorTheme::default(),
         &text::RenderOptions {
             layout: args.layout,
-            ..text::RenderOptions::default()
+            max_width: args.max_width,
         },
     );
     write_output(&tree)
+}
+
+fn parse_max_width(value: &str) -> Result<usize, String> {
+    value
+        .parse::<usize>()
+        .ok()
+        .filter(|width| *width >= 2)
+        .ok_or_else(|| "must be an integer of at least 2".to_owned())
 }
 
 fn configure_color(color: ColorChoice) {
