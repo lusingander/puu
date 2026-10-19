@@ -99,7 +99,7 @@ mod tests {
         console::strip_ansi_codes(&text::render(
             &document,
             &text::ColorTheme::default(),
-            text::Layout::Sections,
+            &text::RenderOptions::default(),
         ))
         .into_owned()
     }

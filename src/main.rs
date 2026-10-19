@@ -106,7 +106,14 @@ fn run() -> Result<(), String> {
         args.pointer.is_some(),
         &options,
     );
-    let tree = text::render(&document, &text::ColorTheme::default(), args.layout);
+    let tree = text::render(
+        &document,
+        &text::ColorTheme::default(),
+        &text::RenderOptions {
+            layout: args.layout,
+            ..text::RenderOptions::default()
+        },
+    );
     write_output(&tree)
 }
 
