@@ -52,6 +52,12 @@ render_all() {
     --max-depth 1
 
   render_image \
+    "max-width-48" \
+    "always" \
+    "docs/examples/options/max-width.json" \
+    --max-width 48
+
+  render_image \
     "layout-sections" \
     "always" \
     "docs/examples/options/references.json" \
