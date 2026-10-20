@@ -13,6 +13,7 @@ Run the following command from the repository root to update the images:
 - [Draft override (`-d` / `--draft`)](#draft-override)
 - [JSON Pointer selection (`-p` / `--pointer`)](#json-pointer-selection)
 - [Maximum display depth (`-L` / `--max-depth`)](#maximum-display-depth)
+- [Maximum output width (`-W` / `--max-width`)](#maximum-output-width)
 - [Output layout (`-l` / `--layout`)](#output-layout)
 - [Definition display (`-D` / `--definitions`)](#definition-display)
 - [Reference expansion (`-r` / `--expand-refs`)](#reference-expansion)
@@ -131,6 +132,41 @@ puu --max-depth 1 docs/examples/options/max-depth.json
 A leaf at the limit is unchanged because it has no children to omit. Expanded reference targets and nodes in the separate `Definitions` section follow the same depth rule.
 
 With `--layout tree`, the common `Schema` parent is excluded from the depth count. The schema root and the `Definitions` heading remain at depth 0, so switching layouts preserves which nodes are visible.
+
+## Maximum output width
+
+`-W N` / `--max-width N` limits each output line to at most `N` terminal columns, including indentation, tree connectors, and the trailing `..` used for truncation. `N` must be an integer of at least 2. Without the option, no line width limit is applied; Puu does not automatically detect terminal width.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "Primary contact address used for account notifications."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pending", "active", "disabled"]
+    }
+  }
+}
+```
+
+[Example input](examples/options/max-width.json)
+
+```console
+puu --max-width 48 docs/examples/options/max-width.json
+```
+
+![Output limited to 48 terminal columns](assets/options/max-width-48.png)
+
+Lines that fit are unchanged. Longer lines are shortened at the end without wrapping, so constraints and annotations beyond the limit may be omitted. Width is measured in display columns rather than bytes or character count: Japanese text uses wide columns, ANSI color codes take no columns, and truncation preserves combining characters and emoji sequences.
+
+The limit applies to both layouts, including the `Schema` heading and the `Definitions` block. Narrow widths can truncate the indentation itself, but every node still produces a line. Explicit limits also apply when output is piped or redirected to a file.
+
+`--verbose` still follows the width limit. Existing per-annotation summaries are independent of this option; omitting `--max-width` removes only the line width limit.
 
 ## Output layout
 

@@ -1,0 +1,14 @@
+{
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "Primary contact address used for account notifications."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pending", "active", "disabled"]
+    }
+  }
+}

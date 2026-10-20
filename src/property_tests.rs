@@ -413,7 +413,11 @@ fn render_pipeline(
         metadata: plain.clone(),
         marker: plain,
     };
-    Ok(text::render(&document, &theme, text::Layout::Sections))
+    Ok(text::render(
+        &document,
+        &theme,
+        &text::RenderOptions::default(),
+    ))
 }
 
 fn respects_max_depth(node: &view::ViewNode, depth: usize, max_depth: usize) -> bool {
@@ -455,7 +459,14 @@ fn exercise_pipeline(input: &str, draft: Option<Dialect>) {
                             &options,
                         );
                         for layout in [text::Layout::Sections, text::Layout::Tree] {
-                            let _ = text::render(&document, &text::ColorTheme::default(), layout);
+                            let _ = text::render(
+                                &document,
+                                &text::ColorTheme::default(),
+                                &text::RenderOptions {
+                                    layout,
+                                    ..text::RenderOptions::default()
+                                },
+                            );
                         }
                     }
                 }
@@ -525,6 +536,44 @@ proptest! {
                 .chars()
                 .all(|character| character == '\n' || !character.is_control())
         );
+    }
+
+    #[test]
+    fn maximum_width_bounds_lines_without_omitting_nodes(
+        value in renderable_schema(),
+        max_width in 2_usize..120,
+        tree_layout in any::<bool>(),
+        verbose in any::<bool>(),
+        expand_refs in any::<bool>(),
+    ) {
+        let input = serde_json::to_string(&value).expect("generated schema should serialize");
+        let parsed = schema::parse(&input, Some(Dialect::Draft202012))
+            .expect("renderable schema should parse");
+        let index = schema::SchemaIndex::new(&parsed);
+        let view_options = view::ViewOptions {
+            verbose,
+            expand_refs,
+            ..view::ViewOptions::default()
+        };
+        let document = view::from_schema(&parsed.root, &index, &parsed.root, "root", false, &view_options);
+        let mut render_options = text::RenderOptions {
+            layout: if tree_layout { text::Layout::Tree } else { text::Layout::Sections },
+            max_width: None,
+        };
+        let theme = text::ColorTheme::default();
+        let full = text::render(&document, &theme, &render_options);
+        render_options.max_width = Some(max_width);
+        let limited = text::render(&document, &theme, &render_options);
+
+        prop_assert_eq!(full.lines().count(), limited.lines().count());
+        for (full_line, limited_line) in full.lines().zip(limited.lines()) {
+            prop_assert!(console::measure_text_width(limited_line) <= max_width);
+            if console::measure_text_width(full_line) <= max_width {
+                prop_assert_eq!(limited_line, full_line);
+            } else {
+                prop_assert!(console::strip_ansi_codes(limited_line).ends_with(".."));
+            }
+        }
     }
 
     #[test]
