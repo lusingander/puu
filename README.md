@@ -72,7 +72,7 @@ Options:
   -d, --draft <DRAFT>        Override the JSON Schema draft [possible values: 2020-12, 2019-09, 7]
   -p, --pointer <POINTER>    Render the schema at a JSON Pointer
   -L, --max-depth <N>        Limit display tree depth, counting the root as depth 0
-      --max-width <N>        Limit output width in terminal columns (at least 2)
+  -W, --max-width <N>        Limit output width in terminal columns
   -l, --layout <MODE>        Arrange output as separate sections or a single tree [default: sections] [possible values: sections, tree]
   -D, --definitions <MODE>   Control which definitions are displayed [default: all] [possible values: all, referenced, none]
   -r, --expand-refs          Expand locally resolved schema references

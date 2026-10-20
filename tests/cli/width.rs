@@ -22,9 +22,13 @@ const INPUT: &str = r##"{
 #[case("10", "root str..\n")]
 #[case("11", "root string\n")]
 #[case("12", "root string\n")]
-fn limits_lines_only_when_they_exceed_the_width(#[case] width: &str, #[case] expected: &str) {
+fn limits_lines_only_when_they_exceed_the_width(
+    #[values("--max-width", "-W")] option: &str,
+    #[case] width: &str,
+    #[case] expected: &str,
+) {
     command()
-        .args(["--max-width", width])
+        .args([option, width])
         .arg(fixture("render", "scalar-string", "json"))
         .assert()
         .success()
@@ -146,9 +150,9 @@ fn no_width_limit_is_applied_without_the_option() {
 #[case("unlimited")]
 #[case("abc")]
 #[case("18446744073709551616")]
-fn rejects_invalid_widths(#[case] width: &str) {
+fn rejects_invalid_widths(#[values("--max-width", "-W")] option: &str, #[case] width: &str) {
     command()
-        .arg(format!("--max-width={width}"))
+        .arg(format!("{option}={width}"))
         .arg("-")
         .assert()
         .failure()

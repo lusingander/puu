@@ -13,7 +13,7 @@ Run the following command from the repository root to update the images:
 - [Draft override (`-d` / `--draft`)](#draft-override)
 - [JSON Pointer selection (`-p` / `--pointer`)](#json-pointer-selection)
 - [Maximum display depth (`-L` / `--max-depth`)](#maximum-display-depth)
-- [Maximum output width (`--max-width`)](#maximum-output-width)
+- [Maximum output width (`-W` / `--max-width`)](#maximum-output-width)
 - [Output layout (`-l` / `--layout`)](#output-layout)
 - [Definition display (`-D` / `--definitions`)](#definition-display)
 - [Reference expansion (`-r` / `--expand-refs`)](#reference-expansion)
@@ -135,7 +135,7 @@ With `--layout tree`, the common `Schema` parent is excluded from the depth coun
 
 ## Maximum output width
 
-`--max-width N` limits each output line to at most `N` terminal columns, including indentation, tree connectors, and the trailing `..` used for truncation. `N` must be an integer of at least 2. Without the option, no line width limit is applied; Puu does not automatically detect terminal width.
+`-W N` / `--max-width N` limits each output line to at most `N` terminal columns, including indentation, tree connectors, and the trailing `..` used for truncation. `N` must be an integer of at least 2. Without the option, no line width limit is applied; Puu does not automatically detect terminal width.
 
 ```json
 {

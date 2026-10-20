@@ -37,8 +37,8 @@ struct Args {
     #[arg(short = 'L', long, value_name = "N")]
     max_depth: Option<usize>,
 
-    /// Limit output width in terminal columns (at least 2)
-    #[arg(long, value_name = "N", value_parser = parse_max_width)]
+    /// Limit output width in terminal columns
+    #[arg(short = 'W', long, value_name = "N", value_parser = parse_max_width)]
     max_width: Option<usize>,
 
     /// Arrange output as separate sections or a single tree
