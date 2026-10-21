@@ -44,19 +44,15 @@ puu [OPTIONS] <SCHEMA>
 
 `SCHEMA` is the path or HTTP(S) URL of a JSON Schema, or `-` to read from standard input.
 
-```
+```sh
+# Render a local schema file
 puu schema.json
+
+# Fetch and render a schema from a URL
 puu https://json.schemastore.org/package.json
+
+# Read a schema from standard input using '-'
 puu - < schema.json
-puu --draft 7 schema.json
-puu --pointer '#/$defs/User' schema.json
-puu --max-depth 2 schema.json
-puu --max-width 80 schema.json
-puu --max-width auto schema.json
-puu -l tree schema.json
-puu --definitions referenced schema.json
-puu -r --definitions none schema.json
-puu -a schema.json
 ```
 
 ### Options
@@ -88,20 +84,7 @@ For concrete inputs, rendered images, and interaction details for every option, 
 
 ### Supported scope
 
-Puu supports JSON Schema Draft 2020-12, 2019-09, and Draft 7. It assumes Draft 2020-12 when `$schema` is absent. This is not a complete implementation of each draft; it supports the parts needed to render:
-
-- Boolean schemas, `type`, `enum`, and `const`
-- `properties`, `required`, `additionalProperties`, `patternProperties`, and `propertyNames`
-- `items`, `prefixItems`, `additionalItems`, and `contains`
-- Common string, numeric, object, and array constraints
-- `allOf`, `anyOf`, `oneOf`, `not`, and `if` / `then` / `else`
-- Property and schema dependencies, `unevaluatedProperties`, and `unevaluatedItems`
-- `$id`, `$defs` / `definitions`, `$ref`, anchors, and recursive or dynamic references
-- Annotations such as `title`, `description`, `default`, `examples`, `readOnly`, `writeOnly`, and the content-related keywords
-
-References within the input document are resolved for display. External references are shown as external but are not fetched.
-
-Unrecognized keywords are reported as `[uninterpreted: ...]`. Keywords that are recognized but have no effect in their current context are reported as `[ignored: ...]`. With `--verbose`, uninterpreted keyword values and expanded annotation details are included. `format` is displayed as an annotation; instance values are not validated against it.
+Puu renders JSON Schema Draft 2020-12, 2019-09, and Draft 7. See [Supported scope](docs/supported-scope.md) for supported keywords and limitations.
 
 ## License
 
