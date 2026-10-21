@@ -143,10 +143,29 @@ fn no_width_limit_is_applied_without_the_option() {
 }
 
 #[rstest]
+fn auto_leaves_piped_output_unlimited_even_with_columns_or_forced_color(
+    #[values("--max-width", "-W")] option: &str,
+    #[values("always", "never")] color: &str,
+) {
+    let expected = fs::read_to_string(fixture("render", "annotations", "txt"))
+        .expect("expected output should exist");
+    let assert = command()
+        .env_remove("NO_COLOR")
+        .env("COLUMNS", "2")
+        .args([option, "auto", "--color", color])
+        .arg(fixture("render", "annotations", "json"))
+        .assert()
+        .success()
+        .stderr("");
+    let output = std::str::from_utf8(&assert.get_output().stdout).expect("output should be UTF-8");
+
+    assert_eq!(console::strip_ansi_codes(output), expected);
+}
+
+#[rstest]
 #[case("0")]
 #[case("1")]
 #[case("-1")]
-#[case("auto")]
 #[case("unlimited")]
 #[case("abc")]
 #[case("18446744073709551616")]
@@ -171,6 +190,6 @@ fn requires_a_width_value() {
         .failure()
         .stdout("")
         .stderr(predicate::str::contains(
-            "a value is required for '--max-width <N>'",
+            "a value is required for '--max-width <N|auto>'",
         ));
 }

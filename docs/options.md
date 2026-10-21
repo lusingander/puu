@@ -135,7 +135,7 @@ With `--layout tree`, the common `Schema` parent is excluded from the depth coun
 
 ## Maximum output width
 
-`-W N` / `--max-width N` limits each output line to at most `N` terminal columns, including indentation, tree connectors, and the trailing `..` used for truncation. `N` must be an integer of at least 2. Without the option, no line width limit is applied; Puu does not automatically detect terminal width.
+`-W N` / `--max-width N` limits each output line to at most `N` terminal columns, including indentation, tree connectors, and the trailing `..` used for truncation. `N` must be an integer of at least 2. Use `-W auto` / `--max-width auto` to select the width automatically. Without the option, no line width limit is applied.
 
 ```json
 {
@@ -165,6 +165,16 @@ puu --max-width 48 docs/examples/options/max-width.json
 Lines that fit are unchanged. Longer lines are shortened at the end without wrapping, so constraints and annotations beyond the limit may be omitted. Width is measured in display columns rather than bytes or character count: Japanese text uses wide columns, ANSI color codes take no columns, and truncation preserves combining characters and emoji sequences.
 
 The limit applies to both layouts, including the `Schema` heading and the `Definitions` block. Narrow widths can truncate the indentation itself, but every node still produces a line. Explicit limits also apply when output is piped or redirected to a file.
+
+With `auto`, Puu uses the terminal width only when standard output is connected to a terminal. If standard output is piped or redirected, or a usable terminal width cannot be determined, no width limit is applied. Puu does not substitute a fixed width or consult standard error, standard input, or the `COLUMNS` environment variable.
+
+| Command | Width limit |
+| --- | --- |
+| `puu schema.json` | None, even in a terminal |
+| `puu -W auto schema.json` | Terminal width when standard output is a terminal |
+| `puu -W auto - < schema.json` | Same; reading from standard input does not affect detection |
+| `puu -W auto schema.json \| less` | None; standard output is a pipe |
+| `puu -W 80 schema.json \| less` | 80 columns |
 
 `--verbose` still follows the width limit. Existing per-annotation summaries are independent of this option; omitting `--max-width` removes only the line width limit.
 
