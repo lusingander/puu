@@ -146,7 +146,6 @@ fn no_width_limit_is_applied_without_the_option() {
 #[case("0")]
 #[case("1")]
 #[case("-1")]
-#[case("auto")]
 #[case("unlimited")]
 #[case("abc")]
 #[case("18446744073709551616")]
@@ -171,6 +170,6 @@ fn requires_a_width_value() {
         .failure()
         .stdout("")
         .stderr(predicate::str::contains(
-            "a value is required for '--max-width <N>'",
+            "a value is required for '--max-width <N|auto>'",
         ));
 }

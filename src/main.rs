@@ -2,6 +2,7 @@ mod dialect;
 mod schema;
 mod text;
 mod view;
+mod width;
 
 #[cfg(test)]
 mod property_tests;
@@ -16,7 +17,7 @@ use std::{
 
 use clap::{ColorChoice, Parser};
 
-use crate::dialect::Dialect;
+use crate::{dialect::Dialect, width::MaxWidth};
 
 /// Puu - Render JSON Schema for humans 🌳
 #[derive(Parser)]
@@ -37,9 +38,9 @@ struct Args {
     #[arg(short = 'L', long, value_name = "N")]
     max_depth: Option<usize>,
 
-    /// Limit output width in terminal columns
-    #[arg(short = 'W', long, value_name = "N", value_parser = parse_max_width)]
-    max_width: Option<usize>,
+    /// Limit output width in terminal columns, or 'auto' for terminal width
+    #[arg(short = 'W', long, value_name = "N|auto")]
+    max_width: Option<MaxWidth>,
 
     /// Arrange output as separate sections or a single tree
     #[arg(
@@ -115,18 +116,10 @@ fn run() -> Result<(), String> {
         &text::ColorTheme::default(),
         &text::RenderOptions {
             layout: args.layout,
-            max_width: args.max_width,
+            max_width: args.max_width.and_then(MaxWidth::resolve),
         },
     );
     write_output(&tree)
-}
-
-fn parse_max_width(value: &str) -> Result<usize, String> {
-    value
-        .parse::<usize>()
-        .ok()
-        .filter(|width| *width >= 2)
-        .ok_or_else(|| "must be an integer of at least 2".to_owned())
 }
 
 fn configure_color(color: ColorChoice) {
